@@ -1,0 +1,217 @@
+/* Core Layout Reset */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #1a1a1a;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Constrained Responsive Aspect Ratio Wrapper */
+#game-container {
+    position: relative;
+    width: 100vw;
+    max-width: 1200px;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
+}
+
+/* Scene Handling */
+.scene {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: none;
+    background-size: cover;
+    background-position: center;
+}
+
+.scene.active {
+    display: block;
+}
+
+/* Room Asset Assignation */
+#scene-bedroom {
+    background-image: url('assets/bedroom.png');
+}
+
+#scene-livingroom {
+    background-image: url('assets/living_room.png');
+}
+
+#scene-kitchen {
+    background-image: url('assets/kitchen.png');
+}
+
+#scene-entrance {
+    background-image: url('assets/entrance.png');
+}
+
+/* Transparent Overlay Sprites (Open Drawers/Doors) */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    /* Let clicks pass straight through to hotspots */
+    z-index: 1;
+}
+
+/* Invisible Clickable Hotspots */
+.hotspot {
+    position: absolute;
+    cursor: pointer;
+    z-index: 2;
+    /* border: 2px dashed rgba(255, 0, 0, 0.4); */
+    /* Uncomment this during testing to view structural boundaries */
+}
+
+.hotspot:hover {
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Navigation UI Buttons */
+.nav-btn {
+    position: absolute;
+    padding: 10px 18px;
+    background: rgba(0, 0, 0, 0.75);
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    z-index: 10;
+    transition: 0.2s ease;
+}
+
+.nav-btn:hover {
+    background: #fff;
+    color: #000;
+}
+
+.nav-left {
+    bottom: 80px;
+    left: 20px;
+}
+
+.nav-right {
+    bottom: 80px;
+    right: 20px;
+}
+
+.nav-up {
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.nav-down {
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Narrative Dialogue Modal Container */
+#dialogue-container {
+    position: absolute;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    background: rgba(20, 15, 10, 0.95);
+    border: 2px solid #d4af37;
+    border-radius: 6px;
+    padding: 15px 25px;
+    color: #f0f0f0;
+    cursor: pointer;
+    z-index: 100;
+}
+
+#dialogue-speaker {
+    font-weight: bold;
+    color: #d4af37;
+    margin-bottom: 5px;
+}
+
+#dialogue-text {
+    font-size: 1.1rem;
+    line-height: 1.4;
+}
+
+.dialogue-arrow {
+    float: right;
+    color: #d4af37;
+    animation: blink 1s infinite;
+}
+
+/* Fixed Horizontal Inventory System UI */
+#inventory-bar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 70px;
+    background: #111;
+    border-top: 3px solid #222;
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    z-index: 90;
+    color: #aaa;
+}
+
+#inventory-bar h3 {
+    margin: 0;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+#inventory-slots {
+    display: flex;
+    margin-left: 20px;
+    gap: 10px;
+}
+
+.inv-item {
+    width: 50px;
+    height: 50px;
+    background: #222;
+    border: 1px solid #444;
+    border-radius: 4px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+.inv-item.selected {
+    border-color: #d4af37;
+    background: #332a15;
+}
+
+/* Global Utilities */
+.hidden {
+    display: none !important;
+}
+
+@keyframes blink {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
+}
