@@ -37,19 +37,19 @@ body {
 
 /* Room Asset Assignation */
 #scene-bedroom {
-    background-image: url('assets/bedroom.png');
+    background-image: url('../pictures/Bedroom/Bedroom start.png');
 }
 
 #scene-livingroom {
-    background-image: url('assets/living_room.png');
+    background-image: url('../pictures/Livingroom/Livingroom start.png');
 }
 
 #scene-kitchen {
-    background-image: url('assets/kitchen.png');
+    background-image: url('../pictures/Kitchen/Kitchen start.png');
 }
 
 #scene-entrance {
-    background-image: url('assets/entrance.png');
+    background-image: url('../pictures/Entrance door/Entrance door.png');
 }
 
 /* Transparent Overlay Sprites (Open Drawers/Doors) */
@@ -213,5 +213,26 @@ body {
 
     50% {
         opacity: 0;
+    }
+}
+
+/* Flashing interaction hint for the active phone call */
+.pulse-glow {
+    background-color: rgba(212, 175, 55, 0.2);
+    border: 2px dashed #d4af37;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% {
+        opacity: 0.3;
+    }
+
+    50% {
+        opacity: 0.8;
+    }
+
+    100% {
+        opacity: 0.3;
     }
 }
