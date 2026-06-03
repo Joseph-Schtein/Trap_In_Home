@@ -218,9 +218,9 @@ body {
 
 /* Flashing interaction hint for the active phone call */
 .pulse-glow {
-    background-color: rgba(212, 175, 55, 0.2);
-    border: 2px dashed #d4af37;
-    animation: pulse 1.5s infinite ease-in-out;
+    /* background-color: rgba(212, 175, 55, 0.2); */
+    /* border: 2px dashed #d4af37; */
+    /* animation: pulse 1.5s infinite ease-in-out; */
 }
 
 @keyframes pulse {
@@ -235,4 +235,206 @@ body {
     100% {
         opacity: 0.3;
     }
+}
+
+/* Incoming Call UI Backdrop */
+#incoming-call-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7);
+    /* Blocks clicks to the rest of the game */
+}
+
+/* The actual phone screen container */
+#incoming-call-ui .phone-screen-container {
+    position: relative;
+    width: 300px;
+    /* Approximate phone width */
+    height: 600px;
+    background: #000;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    overflow: hidden;
+}
+
+/* Remove pale hover effect for phone screen hotspots and bedroom hotspots */
+#incoming-call-ui .hotspot:hover,
+#scene-bedroom .hotspot:hover {
+    background-color: transparent;
+}
+
+#incoming-call-ui img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#incoming-call-ui .decline-btn {
+    top: 70%;
+    left: 65%;
+    width: 20%;
+    height: 15%;
+    /* Uncomment for debugging hotspot placement */
+    /* border: 2px solid red; */
+}
+
+#incoming-call-ui .accept-btn {
+    top: 70%;
+    right: 65%;
+    left: auto;
+    width: 20%;
+    height: 15%;
+    /* Uncomment for debugging hotspot placement */
+    /* border: 2px solid green; */
+}
+
+/* Combination Lock UI */
+#combination-lock-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 150;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Removed the black background */
+}
+
+.combination-lock-container {
+    background: linear-gradient(135deg, #f8dc81, #d4af37, #8c6815);
+    padding: 25px 35px;
+    border-radius: 4px;
+    border: 2px solid #5a420b;
+    text-align: center;
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.4), inset 0 -3px 8px rgba(0, 0, 0, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    /* Optional wooden backplate look if we want it to look like the whole panel */
+    /* background: linear-gradient(to right, #4a2f1d, #6a4428); */
+}
+
+/* Let's add a small detail to look like a lock mechanism on the left like the image */
+.combination-lock-container::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 20px;
+    width: 15px;
+    height: 200px;
+    background: linear-gradient(to right, #d4af37, #8c6815);
+    border: 1px solid #5a420b;
+    border-radius: 2px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.4);
+}
+
+.lock-body {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-left: 20px; /* Make room for the pseudo element */
+}
+
+.lock-digits {
+    display: flex;
+    gap: 15px;
+    background: #111;
+    padding: 15px;
+    border-radius: 4px;
+    border: 3px solid #3a2a0a;
+    box-shadow: inset 0 5px 15px rgba(0, 0, 0, 0.9);
+}
+
+.lock-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.arrow-btn {
+    background: transparent;
+    color: #d4af37;
+    border: none;
+    width: 40px;
+    height: 25px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 1px 1px 2px #000;
+}
+
+.arrow-btn:hover {
+    color: #fff;
+    text-shadow: 0 0 5px #d4af37;
+}
+
+.arrow-btn:active {
+    transform: scale(0.9);
+}
+
+.digit-display {
+    width: 45px;
+    height: 55px;
+    background: linear-gradient(to bottom, #d4af37 0%, #ffeaa7 50%, #8c6815 100%);
+    color: #222;
+    font-size: 2.2rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 3px;
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+    font-family: 'Courier New', Courier, monospace;
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.4);
+    border: 1px solid #5a420b;
+}
+
+.lock-actions {
+    display: flex;
+    gap: 15px;
+    width: 100%;
+    /* No manual translation needed, aligns with lock-digits via lock-body */
+}
+
+.lock-btn {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: bold;
+    transition: background 0.2s;
+}
+
+.lock-btn.submit {
+    background: #4CAF50;
+    color: white;
+}
+
+.lock-btn.submit:hover {
+    background: #45a049;
+}
+
+.lock-btn.cancel {
+    background: #f44336;
+    color: white;
+}
+
+.lock-btn.cancel:hover {
+    background: #da190b;
 }

@@ -12,63 +12,113 @@
 
     <div id="game-container">
 
-        <div id="scene-bedroom" class="scene active">
-            <img id="wardrobe-open" src="../pictures/Bedroom/Bedroom start.png" class="overlay hidden"
+        <div id="scene-bedroom" class="scene active">a
+            <img id="wardrobe-open" src="../pictures/Bedroom/left%20closet%20open.png" class="overlay hidden"
                 alt="Open Wardrobe">
+            <img id="drawer-open" src="../pictures/Bedroom/drawer%20open%20and%20take%20the%20key%20from%20there.png" class="overlay hidden"
+                alt="Open Drawer">
+
+            <div class="hotspot" style="top: 25%; left: 8%; width: 16%; height: 45%;" onclick="interact('wardrobe')">
+            </div>
 
             <div id="bedroom-phone-hotspot" class="hotspot" style="top: 48%; left: 91%; width: 4%; height: 10%;"
-                onclick="interact('bedroom_dresser')"></div>
-        </div>
-        <div class="hotspot" style="top: 15%; left: 65%; width: 15%; height: 15%;" onclick="interact('alarm_clock')">
-        </div>
-        <div class="hotspot" style="top: 60%; left: 75%; width: 20%; height: 25%;"
-            onclick="interact('bedroom_dresser')"></div>
+                onclick="interact('phone')"></div>
+            <div class="hotspot" style="top: 58%; left: 75%; width: 6%; height: 7%;" onclick="interact('Drawer')"></div>
 
-        <button class="nav-btn nav-right" onclick="navigateTo('livingroom')">Go to Living Room &rarr;</button>
-    </div>
-
-    <div id="scene-livingroom" class="scene">
-        <div class="hotspot" style="top: 15%; left: 5%; width: 25%; height: 70%;" onclick="interact('glass_cabinet')">
-        </div>
-        <div class="hotspot" style="top: 65%; left: 40%; width: 45%; height: 20%;" onclick="interact('tv_drawers')">
+            <!-- Door button to go to Living Room in marked place -->
+            <button class="nav-btn" style="top: 12%; left: 59%; transform: translate(-50%, -50%);"
+                onclick="navigateTo('livingroom')">Go to Living Room
+                &rarr;</button>
         </div>
 
-        <button class="nav-btn nav-left" onclick="navigateTo('bedroom')">&larr; Bedroom</button>
-        <button class="nav-btn nav-right" onclick="navigateTo('kitchen')">Kitchen &rarr;</button>
-        <button class="nav-btn nav-down" onclick="navigateTo('entrance')">Go to Front Door &darr;</button>
-    </div>
+        <div id="scene-livingroom" class="scene">
+            <img id="tv-drawers-open" src="../pictures/Livingroom/wooden%20door%20opens.png" class="overlay hidden" alt="Open TV Drawers">
+            <div class="hotspot" style="top: 15%; left: 5%; width: 25%; height: 70%;"
+                onclick="interact('glass_cabinet')">
+            </div>
+            <div class="hotspot" style="top: 65%; left: 40%; width: 45%; height: 20%;" onclick="interact('tv_drawers')">
+            </div>
 
-    <div id="scene-kitchen" class="scene">
-        <img id="island-drawer-open" src="../pictures/Kitchen/Kitchen lower door open.png" class="overlay hidden"
-            alt="Open Drawer">
-
-        <div class="hotspot" style="top: 55%; left: 35%; width: 40%; height: 35%;" onclick="interact('island_drawers')">
-        </div>
-        <div class="hotspot" style="top: 35%; left: 5%; width: 15%; height: 40%;" onclick="interact('oven')"></div>
-
-        <button class="nav-btn nav-left" onclick="navigateTo('livingroom')">&larr; Living Room</button>
-    </div>
-
-    <div id="scene-entrance" class="scene">
-        <div class="hotspot" style="top: 10%; left: 40%; width: 30%; height: 80%;" onclick="interact('front_door')">
-        </div>
-        <div class="hotspot" style="top: 60%; left: 5%; width: 25%; height: 30%;" onclick="interact('hallway_table')">
+            <button class="nav-btn nav-left" onclick="navigateTo('bedroom')">&larr; Bedroom</button>
+            <button class="nav-btn nav-right" onclick="navigateTo('kitchen')">Kitchen &rarr;</button>
+            <button class="nav-btn nav-down" onclick="navigateTo('entrance')">Go to Front Door &darr;</button>
         </div>
 
-        <button class="nav-btn nav-up" onclick="navigateTo('livingroom')">&uarr; Back to Living Room</button>
-    </div>
+        <div id="scene-kitchen" class="scene">
+            <img id="island-drawer-open" src="../pictures/Kitchen/Kitchen lower door open.png" class="overlay hidden"
+                alt="Open Drawer">
 
-    <div id="dialogue-container" class="hidden" onclick="advanceDialogue()">
-        <div id="dialogue-speaker">Spouse via Text</div>
-        <div id="dialogue-text">"Hey honey! I left early..."</div>
-        <div class="dialogue-arrow">&#x25BC;</div>
-    </div>
+            <div class="hotspot" style="top: 55%; left: 35%; width: 40%; height: 35%;"
+                onclick="interact('island_drawers')">
+            </div>
+            <div class="hotspot" style="top: 35%; left: 5%; width: 15%; height: 40%;" onclick="interact('oven')"></div>
 
-    <div id="inventory-bar">
-        <h3>Inventory:</h3>
-        <div id="inventory-slots">
+            <button class="nav-btn nav-left" onclick="navigateTo('livingroom')">&larr; Living Room</button>
         </div>
-    </div>
+
+        <div id="scene-entrance" class="scene">
+            <img id="hallway-table-open" src="../pictures/Entrance%20door/Entrance%20door%20drawer%20open.png" class="overlay hidden" alt="Open Hallway Table">
+            <div class="hotspot" style="top: 10%; left: 40%; width: 30%; height: 80%;" onclick="interact('front_door')">
+            </div>
+            <div class="hotspot" style="top: 60%; left: 5%; width: 25%; height: 30%;"
+                onclick="interact('hallway_table')">
+            </div>
+
+            <button class="nav-btn nav-up" onclick="navigateTo('livingroom')">&uarr; Back to Living Room</button>
+        </div>
+
+        <div id="combination-lock-ui" class="hidden">
+            <div class="combination-lock-container">
+                <div class="lock-body">
+                    <div class="lock-digits">
+                        <div class="lock-column">
+                            <button class="arrow-btn up" onclick="changeDigit(0, 1)">&#9650;</button>
+                            <div class="digit-display" id="digit-0">0</div>
+                            <button class="arrow-btn down" onclick="changeDigit(0, -1)">&#9660;</button>
+                        </div>
+                        <div class="lock-column">
+                            <button class="arrow-btn up" onclick="changeDigit(1, 1)">&#9650;</button>
+                            <div class="digit-display" id="digit-1">0</div>
+                            <button class="arrow-btn down" onclick="changeDigit(1, -1)">&#9660;</button>
+                        </div>
+                        <div class="lock-column">
+                            <button class="arrow-btn up" onclick="changeDigit(2, 1)">&#9650;</button>
+                            <div class="digit-display" id="digit-2">0</div>
+                            <button class="arrow-btn down" onclick="changeDigit(2, -1)">&#9660;</button>
+                        </div>
+                        <div class="lock-column">
+                            <button class="arrow-btn up" onclick="changeDigit(3, 1)">&#9650;</button>
+                            <div class="digit-display" id="digit-3">0</div>
+                            <button class="arrow-btn down" onclick="changeDigit(3, -1)">&#9660;</button>
+                        </div>
+                    </div>
+                    <div class="lock-actions">
+                        <button class="lock-btn submit" onclick="checkLock()">Try Open</button>
+                        <button class="lock-btn cancel" onclick="closeLock()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="dialogue-container" class="hidden" onclick="advanceDialogue()">
+            <div id="dialogue-speaker">Spouse via Text</div>
+            <div id="dialogue-text">"Hey honey! I left early..."</div>
+            <div class="dialogue-arrow">&#x25BC;</div>
+        </div>
+
+        <div id="incoming-call-ui" class="hidden">
+            <div class="phone-screen-container">
+                <img src="../pictures/Phone/income call.png" alt="Incoming Call">
+                <div class="hotspot decline-btn" onclick="declineCall()"></div>
+                <div class="hotspot accept-btn" onclick="acceptCall()"></div>
+            </div>
+        </div>
+
+        <div id="inventory-bar">
+            <h3>Inventory:</h3>
+            <div id="inventory-slots">
+            </div>
+        </div>
 
     </div>
 
