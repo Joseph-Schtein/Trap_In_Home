@@ -116,44 +116,85 @@ function interact(target) {
         case 'oven':
             showText("Self", "It's cold. Hasn't been used in a while.");
             break;
-            
+
         case 'tv_drawers':
             if (!gameState.tvDrawersOpen) {
                 gameState.tvDrawersOpen = true;
-                document.getElementById('tv-drawers-open').classList.remove('hidden');
-                showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a note: "The third digit is ${targetCode[2]}."`);
+                if (!gameState.tvDrawersOpenedOnce) {
+                    gameState.tvDrawersOpenedOnce = true;
+                    showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a note: "The third digit is ${targetCode[2]}."`);
+                }
             } else {
-                showText("Self", `Just old cables and the receipt saying the third digit is ${targetCode[2]}.`);
+                gameState.tvDrawersOpen = false;
             }
+            updateLivingRoomImages();
             break;
 
         case 'hallway_table':
             if (!gameState.hallwayTableOpen) {
                 gameState.hallwayTableOpen = true;
                 document.getElementById('hallway-table-open').classList.remove('hidden');
-                showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside: "And the final digit is ${targetCode[3]}! Hope you can open it."`);
+                if (!gameState.hallwayTableOpenedOnce) {
+                    gameState.hallwayTableOpenedOnce = true;
+                    showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside: "And the final digit is ${targetCode[3]}! Hope you can open it."`);
+                }
             } else {
-                showText("Self", `Just the sticky note inside that says the final digit is ${targetCode[3]}.`);
+                gameState.hallwayTableOpen = false;
+                document.getElementById('hallway-table-open').classList.add('hidden');
             }
             break;
 
         case 'glass_cabinet':
-            showText("Self", "Just some fancy glasses we never use.");
+            if (!gameState.glassCabinetOpen) {
+                gameState.glassCabinetOpen = true;
+                if (!gameState.glassCabinetOpenedOnce) {
+                    gameState.glassCabinetOpenedOnce = true;
+                    showText("Self", "Just some fancy glasses we never use.");
+                }
+            } else {
+                gameState.glassCabinetOpen = false;
+            }
+            updateLivingRoomImages();
             break;
-            
+
         case 'island_drawers':
             if (!gameState.kitchenDrawerOpen) {
                 gameState.kitchenDrawerOpen = true;
                 document.getElementById('island-drawer-open').classList.remove('hidden');
-                showText("Self", `I opened the kitchen cabinet. Inside, tucked next to some plates, is a note: "The second digit is ${targetCode[1]}."`);
+                if (!gameState.kitchenDrawerOpenedOnce) {
+                    gameState.kitchenDrawerOpenedOnce = true;
+                    showText("Self", `I opened the kitchen cabinet. Inside, tucked next to some plates, is a note: "The second digit is ${targetCode[1]}."`);
+                }
             } else {
-                showText("Self", `Just plates and that note saying the second digit is ${targetCode[1]}.`);
+                gameState.kitchenDrawerOpen = false;
+                document.getElementById('island-drawer-open').classList.add('hidden');
             }
             break;
-            
+
         case 'front_door':
             showText("Self", "The front door is locked tight. I need the key to get out.");
             break;
+    }
+}
+
+function updateLivingRoomImages() {
+    const tvOpen = gameState.tvDrawersOpen;
+    const glassOpen = gameState.glassCabinetOpen;
+
+    const tvEl = document.getElementById('tv-drawers-open');
+    const glassEl = document.getElementById('glass-cabinet-open');
+    const bothEl = document.getElementById('both-doors-open');
+
+    if (tvEl) tvEl.classList.add('hidden');
+    if (glassEl) glassEl.classList.add('hidden');
+    if (bothEl) bothEl.classList.add('hidden');
+
+    if (tvOpen && glassOpen) {
+        if (bothEl) bothEl.classList.remove('hidden');
+    } else if (tvOpen) {
+        if (tvEl) tvEl.classList.remove('hidden');
+    } else if (glassOpen) {
+        if (glassEl) glassEl.classList.remove('hidden');
     }
 }
 
@@ -228,7 +269,7 @@ function advanceDialogue() {
 let introStarted = false;
 
 // Add global click listener to advance dialogue anywhere on the screen
-document.addEventListener('click', function(e) {
+document.addEventListener('click', function (e) {
     const container = document.getElementById('dialogue-container');
     // If dialogue is active, advance it and prevent the click from doing anything else
     if (container && !container.classList.contains('hidden')) {
@@ -261,8 +302,58 @@ function addItem(itemName) {
             itemEl.innerText = itemName;
         }
 
-        itemEl.onclick = () => useItem(itemName);
+        itemEl.onclick = (e) => showInventoryOptions(e, itemName);
         slots.appendChild(itemEl);
+    }
+}
+
+function showInventoryOptions(e, itemName) {
+    e.stopPropagation();
+    let menu = document.getElementById('inventory-context-menu');
+    if (!menu) {
+        menu = document.createElement('div');
+        menu.id = 'inventory-context-menu';
+        menu.innerHTML = `
+            <button id="ctx-btn-look" class="ctx-btn">Look</button>
+            <button id="ctx-btn-use" class="ctx-btn">Use</button>
+        `;
+        document.getElementById('game-container').appendChild(menu);
+
+        document.addEventListener('click', (ev) => {
+            if (!menu.contains(ev.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    }
+
+    const rect = e.target.closest('.inv-item').getBoundingClientRect();
+    const containerRect = document.getElementById('game-container').getBoundingClientRect();
+
+    menu.style.left = (rect.left - containerRect.left) + 'px';
+    menu.style.bottom = '80px';
+    menu.style.top = 'auto';
+    menu.classList.remove('hidden');
+
+    document.getElementById('ctx-btn-look').onclick = (ev) => {
+        ev.stopPropagation();
+        menu.classList.add('hidden');
+        lookItem(itemName);
+    };
+
+    document.getElementById('ctx-btn-use').onclick = (ev) => {
+        ev.stopPropagation();
+        menu.classList.add('hidden');
+        useItem(itemName);
+    };
+}
+
+function lookItem(itemName) {
+    if (itemName === "My Phone") {
+        showText("Self", "It's my smartphone. The screen is a bit smudged.");
+    } else if (itemName === "Small Key") {
+        showText("Self", "A small, ordinary-looking key. It looks like it could fit a door.");
+    } else {
+        showText("Self", `I examined the ${itemName}.`);
     }
 }
 
@@ -273,10 +364,16 @@ function useItem(itemName) {
         } else {
             const now = new Date();
             const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            showText("Self", `I checked the phone. The time is ${timeString}.`);
+            showText("Self", `I used the phone to check the time. It is ${timeString}.`);
+        }
+    } else if (itemName === "Small Key") {
+        if (gameState.currentScene === 'entrance') {
+            showText("System", "You unlocked the front door and escaped! You win!");
+        } else {
+            showText("Self", "I can't use this here. I need to find what it unlocks.");
         }
     } else {
-        showText("Self", `I examined the ${itemName}.`);
+        showText("Self", `I tried to use the ${itemName}, but nothing happened.`);
     }
 }
 
@@ -335,8 +432,8 @@ function checkLock() {
             break;
         }
     }
-    
-    if (correct) { 
+
+    if (correct) {
         gameState.dresserUnlocked = true;
         closeLock();
         document.getElementById('drawer-open').classList.remove('hidden');
