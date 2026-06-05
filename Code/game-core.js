@@ -15,6 +15,7 @@ const gameState = {
     // Bedroom states
     wardrobeOpen: false,
     dresserUnlocked: false,
+    clothesChanged: false,
 
     // Kitchen states
     kitchenDrawerOpen: false,
@@ -298,6 +299,10 @@ function useItem(itemName) {
         }
     } else if (itemName === "Small Key") {
         if (gameState.currentScene === 'entrance') {
+            if (!gameState.clothesChanged) {
+                showText("Self", "I can't go to work with my pijama.");
+                return;
+            }
             if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
                 showText("System", "You unlocked the front door and escaped on time! You win!");
             } else {

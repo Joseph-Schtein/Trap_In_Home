@@ -58,9 +58,15 @@ function updateBedroomImages() {
 interactHandlers['wardrobe'] = function () {
     if (!gameState.wardrobeOpen) {
         gameState.wardrobeOpen = true;
-        advanceTime(7);
-        updateBedroomImages();
-        showText("Self", "I flung the closet doors open and took 7 minutes to change my clothes. Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
+        if (!gameState.clothesChanged) {
+            gameState.clothesChanged = true;
+            advanceTime(7);
+            updateBedroomImages();
+            showText("Self", "I flung the closet doors open and took 7 minutes to change my clothes. Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
+        } else {
+            updateBedroomImages();
+            showText("Self", "I flung the closet doors open! Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
+        }
     } else {
         gameState.wardrobeOpen = false;
         updateBedroomImages();
