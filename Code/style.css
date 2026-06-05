@@ -27,7 +27,7 @@ body {
     width: 100%;
     height: 100%;
     display: none;
-    background-size: 100% auto;
+    background-size: 100% 100%;
     background-position: center;
     background-repeat: no-repeat;
 }
@@ -471,8 +471,40 @@ body {
     color: #d4af37;
 }
 
-/* Hide hotspots and navigation buttons when dialogue is active */
+/* Hide hotspots and navigation buttons when dialogue or lock is active */
 .dialogue-active .hotspot,
-.dialogue-active .nav-btn {
+.dialogue-active .nav-btn,
+.lock-active .hotspot,
+.lock-active .nav-btn {
     display: none !important;
+}
+
+/* Fail Screen */
+#fail-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #ff4c4c;
+    text-align: center;
+}
+
+.fail-content h2 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.fail-content p {
+    font-size: 1.5rem;
+    color: #ccc;
+    margin-bottom: 40px;
 }

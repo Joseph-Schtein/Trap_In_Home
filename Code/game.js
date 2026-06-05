@@ -257,9 +257,9 @@ function updateKitchenImages() {
 function updateEntranceImages() {
     const drawerOpen = gameState.hallwayTableOpen;
     const keysTaken = gameState.inventory.includes("key number 1");
-    
+
     const entranceScene = document.getElementById('scene-entrance');
-    
+
     if (drawerOpen && keysTaken) {
         entranceScene.style.backgroundImage = "url('../pictures/Entrance%20door/close%20drawers%20keys%20taken.png')";
     } else if (drawerOpen && !keysTaken) {

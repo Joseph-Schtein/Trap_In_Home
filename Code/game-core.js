@@ -40,7 +40,10 @@ const gameState = {
     isPhoneRinging: false,
 
     // Audio
-    phoneRingtone: new Audio('../Sound/freesound_community-cellphone-ringing-6475.mp3')
+    phoneRingtone: new Audio('../Sound/freesound_community-cellphone-ringing-6475.mp3'),
+    
+    // Time
+    currentTimeMinutes: 8 * 60 + 23 // Starts at 08:23
 };
 
 // Configure ringtone
@@ -108,6 +111,13 @@ function interact(target) {
     } else {
         console.warn(`No interact handler registered for target: "${target}"`);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Time System
+// ---------------------------------------------------------------------------
+function advanceTime(minutes) {
+    gameState.currentTimeMinutes += minutes;
 }
 
 // ---------------------------------------------------------------------------
@@ -281,13 +291,18 @@ function useItem(itemName) {
         if (gameState.isPhoneRinging) {
             document.getElementById('incoming-call-ui').classList.remove('hidden');
         } else {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const hours = Math.floor(gameState.currentTimeMinutes / 60);
+            const minutes = gameState.currentTimeMinutes % 60;
+            const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
         }
     } else if (itemName === "Small Key") {
         if (gameState.currentScene === 'entrance') {
-            showText("System", "You unlocked the front door and escaped! You win!");
+            if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
+                showText("System", "You unlocked the front door and escaped on time! You win!");
+            } else {
+                document.getElementById('fail-screen').classList.remove('hidden');
+            }
         } else {
             showText("Self", "I can't use this here. I need to find what it unlocks.");
         }
@@ -356,7 +371,12 @@ function checkLock() {
     if (correct) {
         gameState.dresserUnlocked = true;
         closeLock();
-        document.getElementById('drawer-open').classList.remove('hidden');
+        if (typeof updateBedroomImages === 'function') {
+            updateBedroomImages();
+        } else {
+            const drawerEl = document.getElementById('drawer-open');
+            if (drawerEl) drawerEl.classList.remove('hidden');
+        }
         showText("System", "*Click* The lock opens.");
         showText("Self", "It opened! Let's see what's inside... ah, a key!");
         if (!gameState.inventory.includes("Small Key")) {
@@ -369,4 +389,5 @@ function checkLock() {
 
 function closeLock() {
     document.getElementById('combination-lock-ui').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('lock-active');
 }

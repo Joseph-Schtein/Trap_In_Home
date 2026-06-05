@@ -17,6 +17,8 @@
                 alt="Open Wardrobe">
             <img id="drawer-open" src="../pictures/Bedroom/drawer%20open%20and%20take%20the%20key%20from%20there.png" class="overlay hidden"
                 alt="Open Drawer">
+            <img id="drawer-open-closet-close" src="../pictures/Bedroom/drawer%20open%20closet%20close.png" class="overlay hidden"
+                alt="Drawer Open Closet Close">
 
             <div class="hotspot" style="top: 25%; left: 8%; width: 16%; height: 45%;" onclick="interact('wardrobe')">
             </div>
@@ -119,6 +121,14 @@
         <div id="inventory-bar">
             <h3>Inventory:</h3>
             <div id="inventory-slots">
+            </div>
+        </div>
+
+        <div id="fail-screen" class="hidden">
+            <div class="fail-content">
+                <h2>Game Over</h2>
+                <p>You didn't make it out in time. You missed your meeting!</p>
+                <button class="nav-btn" style="position: relative;" onclick="location.reload()">Try Again</button>
             </div>
         </div>
 

@@ -31,15 +31,40 @@ interactHandlers['phone'] = function () {
 };
 
 // ---------------------------------------------------------------------------
+// Image State Manager
+// ---------------------------------------------------------------------------
+function updateBedroomImages() {
+    const wardrobeEl = document.getElementById('wardrobe-open');
+    const drawerEl = document.getElementById('drawer-open');
+    const drawerClosetCloseEl = document.getElementById('drawer-open-closet-close');
+
+    if (wardrobeEl) wardrobeEl.classList.add('hidden');
+    if (drawerEl) drawerEl.classList.add('hidden');
+    if (drawerClosetCloseEl) drawerClosetCloseEl.classList.add('hidden');
+
+    if (gameState.wardrobeOpen && gameState.dresserUnlocked) {
+        if (wardrobeEl) wardrobeEl.classList.remove('hidden');
+        if (drawerEl) drawerEl.classList.remove('hidden');
+    } else if (gameState.wardrobeOpen) {
+        if (wardrobeEl) wardrobeEl.classList.remove('hidden');
+    } else if (gameState.dresserUnlocked) {
+        if (drawerClosetCloseEl) drawerClosetCloseEl.classList.remove('hidden');
+    }
+}
+
+// ---------------------------------------------------------------------------
 // Wardrobe interaction
 // ---------------------------------------------------------------------------
 interactHandlers['wardrobe'] = function () {
     if (!gameState.wardrobeOpen) {
         gameState.wardrobeOpen = true;
-        document.getElementById('wardrobe-open').classList.remove('hidden');
-        showText("Self", "I flung the closet doors open! Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
+        advanceTime(7);
+        updateBedroomImages();
+        showText("Self", "I flung the closet doors open and took 7 minutes to change my clothes. Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
     } else {
-        showText("Self", "Still no magical winter wonderland in here. Just my boring clothes and that stubborn lockbox.");
+        gameState.wardrobeOpen = false;
+        updateBedroomImages();
+        showText("Self", "I closed the closet doors. Maybe I should focus on finding a way out.");
     }
 };
 
@@ -49,6 +74,7 @@ interactHandlers['wardrobe'] = function () {
 interactHandlers['Drawer'] = function () {
     if (!gameState.dresserUnlocked) {
         document.getElementById('combination-lock-ui').classList.remove('hidden');
+        document.getElementById('game-container').classList.add('lock-active');
         // Reset digits
         lockCode = [0, 0, 0, 0];
         for (let i = 0; i < 4; i++) {
