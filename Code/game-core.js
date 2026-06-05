@@ -148,8 +148,8 @@ function navigateTo(sceneId) {
 // ---------------------------------------------------------------------------
 let dialogueQueue = [];
 
-function showText(speaker, text, action = null) {
-    dialogueQueue.push({ speaker, text, action });
+function showText(speaker, text, action = null, options = null) {
+    dialogueQueue.push({ speaker, text, action, options });
     if (dialogueQueue.length === 1) {
         displayCurrentDialogue();
     }
@@ -161,15 +161,55 @@ function displayCurrentDialogue() {
     const container = document.getElementById('dialogue-container');
     const speakerEl = document.getElementById('dialogue-speaker');
     const textEl = document.getElementById('dialogue-text');
+    const optionsContainer = document.getElementById('dialogue-options');
+    const arrowEl = container ? container.querySelector('.dialogue-arrow') : null;
+
     if (container && speakerEl && textEl) {
         speakerEl.innerText = current.speaker;
         textEl.innerText = current.text;
         container.classList.remove('hidden');
         document.getElementById('game-container').classList.add('dialogue-active');
+
+        if (current.options && current.options.length > 0) {
+            container.classList.add('has-options');
+            if (arrowEl) arrowEl.classList.add('hidden');
+            if (optionsContainer) {
+                optionsContainer.innerHTML = '';
+                current.options.forEach((opt, index) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'dialogue-option-btn';
+                    btn.innerText = opt.text;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        handleDialogueOption(index);
+                    };
+                    optionsContainer.appendChild(btn);
+                });
+                optionsContainer.classList.remove('hidden');
+            }
+        } else {
+            container.classList.remove('has-options');
+            if (arrowEl) arrowEl.classList.remove('hidden');
+            if (optionsContainer) {
+                optionsContainer.classList.add('hidden');
+            }
+        }
     }
     if (current.action && typeof current.action === 'function') {
         current.action();
     }
+}
+
+function handleDialogueOption(index) {
+    if (dialogueQueue.length === 0) return;
+    const current = dialogueQueue[0];
+    if (current.options && current.options[index]) {
+        const opt = current.options[index];
+        if (opt.action && typeof opt.action === 'function') {
+            opt.action();
+        }
+    }
+    advanceDialogue();
 }
 
 function advanceDialogue() {
@@ -192,6 +232,7 @@ let introStarted = false;
 document.addEventListener('click', function (e) {
     const container = document.getElementById('dialogue-container');
     if (container && !container.classList.contains('hidden')) {
+        if (container.classList.contains('has-options')) return;
         advanceDialogue();
         if (introStarted) {
             e.stopPropagation();

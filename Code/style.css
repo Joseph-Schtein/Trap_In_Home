@@ -75,7 +75,7 @@ body {
 }
 
 .hotspot:hover {
-    background-color: rgba(255, 255, 255, 0.15);
+    background-color: transparent;
 }
 
 /* Navigation UI Buttons */
@@ -149,6 +149,32 @@ body {
     float: right;
     color: #d4af37;
     animation: blink 1s infinite;
+}
+
+/* Dialogue Options */
+#dialogue-options {
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.dialogue-option-btn {
+    background: #1a1a1a;
+    color: #d4af37;
+    border: 1px solid #d4af37;
+    border-radius: 4px;
+    padding: 10px 15px;
+    font-size: 1rem;
+    cursor: pointer;
+    text-align: left;
+    transition: 0.2s;
+    font-family: inherit;
+}
+
+.dialogue-option-btn:hover {
+    background: #d4af37;
+    color: #1a1a1a;
 }
 
 /* Fixed Horizontal Inventory System UI */
