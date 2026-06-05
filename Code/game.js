@@ -7,6 +7,10 @@ const gameState = {
     // States
     wardrobeOpen: false,
     kitchenDrawerOpen: false,
+    fruitsBowlClicked: false,
+    kitchenKeysFound: false,
+    upperCabinetOpen: false,
+    lowerCabinetOpen: false,
     hasDeadboltKey: false,
     locksRemaining: 3,
 
@@ -117,11 +121,23 @@ function interact(target) {
 
 
         case 'oven':
-            showText("Self", "It's cold. Hasn't been used in a while.");
+            if (!gameState.kitchenKeysFound) {
+                showText("Self", "You need a key to open the cabinet");
+            } else {
+                gameState.lowerCabinetOpen = !gameState.lowerCabinetOpen;
+                updateKitchenImages();
+            }
             break;
 
         case 'kitchen_middle':
-            showText("Self", "Just the middle of the kitchen.");
+            if (!gameState.fruitsBowlClicked) {
+                gameState.fruitsBowlClicked = true;
+                showText("Self", "I remember that there were keys inside this bowl");
+            } else if (!gameState.kitchenKeysFound) {
+                gameState.kitchenKeysFound = true;
+                document.getElementById('kitchen-bowl-found').classList.remove('hidden');
+                addItem("Kitchen Keys");
+            }
             break;
 
         case 'tv_drawers':
@@ -176,16 +192,11 @@ function interact(target) {
             break;
 
         case 'island_drawers':
-            if (!gameState.kitchenDrawerOpen) {
-                gameState.kitchenDrawerOpen = true;
-                document.getElementById('island-drawer-open').classList.remove('hidden');
-                if (!gameState.kitchenDrawerOpenedOnce) {
-                    gameState.kitchenDrawerOpenedOnce = true;
-                    showText("Self", `I opened the kitchen cabinet. Inside, tucked next to some plates, is a note: "The second digit is ${targetCode[1]}."`);
-                }
+            if (!gameState.kitchenKeysFound) {
+                showText("Self", "You need a key to open the cabinet");
             } else {
-                gameState.kitchenDrawerOpen = false;
-                document.getElementById('island-drawer-open').classList.add('hidden');
+                gameState.upperCabinetOpen = !gameState.upperCabinetOpen;
+                updateKitchenImages();
             }
             break;
 
@@ -213,6 +224,33 @@ function updateLivingRoomImages() {
         if (tvEl) tvEl.classList.remove('hidden');
     } else if (glassOpen) {
         if (glassEl) glassEl.classList.remove('hidden');
+    }
+}
+
+function updateKitchenImages() {
+    const upper = gameState.upperCabinetOpen;
+    const lower = gameState.lowerCabinetOpen;
+
+    const bowlEl = document.getElementById('kitchen-bowl-found');
+    const upperEl = document.getElementById('kitchen-upper-open');
+    const lowerEl = document.getElementById('kitchen-lower-open');
+    const bothEl = document.getElementById('kitchen-both-open');
+
+    if (upperEl) upperEl.classList.add('hidden');
+    if (lowerEl) lowerEl.classList.add('hidden');
+    if (bothEl) bothEl.classList.add('hidden');
+
+    if (!upper && !lower) {
+        // Cabinets closed — hide bowl overlay so Kitchen start.png shows
+        if (bowlEl) bowlEl.classList.add('hidden');
+    } else {
+        if (upper && lower) {
+            if (bothEl) bothEl.classList.remove('hidden');
+        } else if (upper) {
+            if (upperEl) upperEl.classList.remove('hidden');
+        } else if (lower) {
+            if (lowerEl) lowerEl.classList.remove('hidden');
+        }
     }
 }
 
@@ -332,6 +370,14 @@ function addItem(itemName) {
         if (itemName === "My Phone") {
             const imgEl = document.createElement('img');
             imgEl.src = "../pictures/Phone/android.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+        } else if (itemName === "Kitchen Keys") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/keys/keys.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
