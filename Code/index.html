@@ -124,7 +124,13 @@
 
     </div>
 
-    <script src="game.js"></script>
+    <!-- Core engine must load first — defines gameState, interactHandlers, etc. -->
+    <script src="game-core.js"></script>
+    <!-- Room-specific logic — each file registers its interact handlers -->
+    <script src="bedroom.js"></script>
+    <script src="livingroom.js"></script>
+    <script src="kitchen.js"></script>
+    <script src="entrance.js"></script>
 </body>
 
 </html>
