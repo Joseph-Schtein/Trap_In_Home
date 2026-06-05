@@ -64,7 +64,7 @@ function startIntroSequence() {
 
 // Update the interaction behavior inside your router
 function interact(target) {
-    if (target !== 'phone' && !gameState.inventory.includes("My Phone")) {
+    if (target !== 'phone' && (!gameState.inventory.includes("My Phone") || gameState.isPhoneRinging)) {
         showText("Self", "I should find my phone first, that ringing is driving me crazy!");
         return;
     }
@@ -76,7 +76,10 @@ function interact(target) {
 
         case 'phone':
             if (gameState.isPhoneRinging) {
-                document.getElementById('bedroom-phone-hotspot').classList.remove('pulse-glow');
+                const phoneHotspot = document.getElementById('bedroom-phone-hotspot');
+                if (phoneHotspot) {
+                    phoneHotspot.remove();
+                }
 
                 // If it's not already in inventory, add it
                 if (!gameState.inventory.includes("My Phone")) {
@@ -117,6 +120,10 @@ function interact(target) {
             showText("Self", "It's cold. Hasn't been used in a while.");
             break;
 
+        case 'kitchen_middle':
+            showText("Self", "Just the middle of the kitchen.");
+            break;
+
         case 'tv_drawers':
             if (!gameState.tvDrawersOpen) {
                 gameState.tvDrawersOpen = true;
@@ -133,14 +140,25 @@ function interact(target) {
         case 'hallway_table':
             if (!gameState.hallwayTableOpen) {
                 gameState.hallwayTableOpen = true;
-                document.getElementById('hallway-table-open').classList.remove('hidden');
                 if (!gameState.hallwayTableOpenedOnce) {
                     gameState.hallwayTableOpenedOnce = true;
                     showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside: "And the final digit is ${targetCode[3]}! Hope you can open it."`);
                 }
             } else {
                 gameState.hallwayTableOpen = false;
-                document.getElementById('hallway-table-open').classList.add('hidden');
+            }
+            updateEntranceImages();
+            break;
+
+        case 'keys':
+            if (!gameState.inventory.includes("key number 1")) {
+                addItem("key number 1");
+                showText("Self", "I took key number 1 from the table.");
+                const hotspot = document.getElementById('keys-hotspot');
+                if (hotspot) hotspot.remove();
+                updateEntranceImages();
+            } else {
+                showText("Self", "I already have key number 1.");
             }
             break;
 
@@ -198,6 +216,23 @@ function updateLivingRoomImages() {
     }
 }
 
+function updateEntranceImages() {
+    const drawerOpen = gameState.hallwayTableOpen;
+    const keysTaken = gameState.inventory.includes("key number 1");
+    
+    const entranceScene = document.getElementById('scene-entrance');
+    
+    if (drawerOpen && keysTaken) {
+        entranceScene.style.backgroundImage = "url('../pictures/Entrance%20door/close%20drawers%20keys%20taken.png')";
+    } else if (drawerOpen && !keysTaken) {
+        entranceScene.style.backgroundImage = "url('../pictures/Entrance%20door/Entrance%20door%20drawer%20open.png')";
+    } else if (!drawerOpen && keysTaken) {
+        entranceScene.style.backgroundImage = "url('../pictures/Entrance%20door/Keys%20taken.png')";
+    } else {
+        entranceScene.style.backgroundImage = "url('../pictures/Entrance%20door/Entrance%20door.png')";
+    }
+}
+
 // Navigation function to change rooms
 function navigateTo(sceneId) {
     // Hide the current scene
@@ -245,6 +280,7 @@ function displayCurrentDialogue() {
         speakerEl.innerText = current.speaker;
         textEl.innerText = current.text;
         container.classList.remove('hidden');
+        document.getElementById('game-container').classList.add('dialogue-active');
     }
 
     // Execute associated action if provided
@@ -262,7 +298,10 @@ function advanceDialogue() {
         displayCurrentDialogue();
     } else {
         const container = document.getElementById('dialogue-container');
-        if (container) container.classList.add('hidden');
+        if (container) {
+            container.classList.add('hidden');
+            document.getElementById('game-container').classList.remove('dialogue-active');
+        }
     }
 }
 

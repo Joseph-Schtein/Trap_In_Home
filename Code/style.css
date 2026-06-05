@@ -41,7 +41,7 @@ body {
 }
 
 #scene-livingroom {
-    background-image: url('../pictures/Livingroom/Livingroom start.png');
+    background-image: url('../pictures/Livingroom/Living room start.png');
 }
 
 #scene-kitchen {
@@ -468,4 +468,10 @@ body {
 .ctx-btn:hover {
     background: #332a15;
     color: #d4af37;
+}
+
+/* Hide hotspots and navigation buttons when dialogue is active */
+.dialogue-active .hotspot,
+.dialogue-active .nav-btn {
+    display: none !important;
 }
