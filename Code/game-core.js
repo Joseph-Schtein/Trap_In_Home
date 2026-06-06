@@ -244,6 +244,16 @@ document.addEventListener('click', function (e) {
 // ---------------------------------------------------------------------------
 function addItem(itemName) {
     gameState.inventory.push(itemName);
+
+    // Reveal the paper in the living room once all 4 digits are collected
+    const allDigits = [`${targetCode[0]}`, `${targetCode[1]}`, `${targetCode[2]}`, `${targetCode[3]}`];
+    if (allDigits.every(d => gameState.inventory.includes(d))) {
+        const paperImg = document.getElementById('living-room-paper');
+        const paperHotspot = document.getElementById('paper-hotspot');
+        if (paperImg) paperImg.style.display = 'block';
+        if (paperHotspot) paperHotspot.style.display = 'block';
+    }
+
     const slots = document.getElementById('inventory-slots');
     if (slots) {
         const itemEl = document.createElement('div');
