@@ -14,6 +14,7 @@ interactHandlers['kitchen_middle'] = function () {
     } else if (!gameState.kitchenKeysFound) {
         gameState.kitchenKeysFound = true;
         document.getElementById('kitchen-bowl-found').classList.remove('hidden');
+        keysSound.cloneNode().play();
         addItem("Kitchen Keys");
     }
 };
@@ -28,6 +29,7 @@ interactHandlers['island_drawers'] = function () {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
         gameState.upperCabinetOpen = !gameState.upperCabinetOpen;
+        gameState.upperCabinetOpen ? cabinetOpenSound.cloneNode().play() : cabinetCloseSound.cloneNode().play();
         updateKitchenImages();
         if (gameState.upperCabinetOpen && !gameState.upperCabinetOpenedOnce) {
             gameState.upperCabinetOpenedOnce = true;
@@ -47,6 +49,7 @@ interactHandlers['oven'] = function () {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
         gameState.lowerCabinetOpen = !gameState.lowerCabinetOpen;
+        gameState.lowerCabinetOpen ? cabinetOpenSound.cloneNode().play() : cabinetCloseSound.cloneNode().play();
         updateKitchenImages();
     }
 };

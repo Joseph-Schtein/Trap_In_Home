@@ -58,6 +58,7 @@ function updateBedroomImages() {
 interactHandlers['wardrobe'] = function () {
     if (!gameState.wardrobeOpen) {
         gameState.wardrobeOpen = true;
+        cabinetOpenSound.cloneNode().play();
         if (!gameState.clothesChanged) {
             showText("Self", "I flung the closet doors open. What should I do?", null, [
                 {
@@ -84,6 +85,7 @@ interactHandlers['wardrobe'] = function () {
         }
     } else {
         gameState.wardrobeOpen = false;
+        cabinetCloseSound.cloneNode().play();
         updateBedroomImages();
         showText("Self", "I closed the closet doors. Maybe I should focus on finding a way out.");
     }
