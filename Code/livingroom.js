@@ -5,17 +5,35 @@
 // =============================================================================
 
 // ---------------------------------------------------------------------------
+// Paper interaction (pick up from floor)
+// ---------------------------------------------------------------------------
+interactHandlers['paper'] = function () {
+    if (!gameState.inventory.includes("Paper")) {
+        paperSound.cloneNode().play();
+        addItem("Paper");
+        const paperEl = document.getElementById('living-room-paper');
+        if (paperEl) paperEl.style.display = 'none';
+        const hotspot = document.getElementById('paper-hotspot');
+        if (hotspot) hotspot.remove();
+        showText("Self", "I picked up the paper.");
+    }
+};
+
+// ---------------------------------------------------------------------------
 // TV Drawers interaction
 // ---------------------------------------------------------------------------
 interactHandlers['tv_drawers'] = function () {
     if (!gameState.tvDrawersOpen) {
         gameState.tvDrawersOpen = true;
+        cabinetOpenSound.cloneNode().play();
         if (!gameState.tvDrawersOpenedOnce) {
             gameState.tvDrawersOpenedOnce = true;
-            showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a note: "The third digit is ${targetCode[2]}."`);
+            showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a number on it: "${targetCode[2]}"`);
+            addItem(`${targetCode[2]}`);
         }
     } else {
         gameState.tvDrawersOpen = false;
+        cabinetCloseSound.cloneNode().play();
     }
     updateLivingRoomImages();
 };
@@ -26,12 +44,14 @@ interactHandlers['tv_drawers'] = function () {
 interactHandlers['glass_cabinet'] = function () {
     if (!gameState.glassCabinetOpen) {
         gameState.glassCabinetOpen = true;
+        cabinetOpenSound.cloneNode().play();
         if (!gameState.glassCabinetOpenedOnce) {
             gameState.glassCabinetOpenedOnce = true;
             showText("Self", "Just some fancy glasses we never use.");
         }
     } else {
         gameState.glassCabinetOpen = false;
+        cabinetCloseSound.cloneNode().play();
     }
     updateLivingRoomImages();
 };

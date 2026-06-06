@@ -17,12 +17,15 @@ interactHandlers['front_door'] = function () {
 interactHandlers['hallway_table'] = function () {
     if (!gameState.hallwayTableOpen) {
         gameState.hallwayTableOpen = true;
+        cabinetOpenSound.cloneNode().play();
         if (!gameState.hallwayTableOpenedOnce) {
             gameState.hallwayTableOpenedOnce = true;
-            showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside: "And the final digit is ${targetCode[3]}! Hope you can open it."`);
+            showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside with a number: "${targetCode[3]}"`);
+            addItem(`${targetCode[3]}`);
         }
     } else {
         gameState.hallwayTableOpen = false;
+        cabinetCloseSound.cloneNode().play();
     }
     updateEntranceImages();
 };
@@ -32,6 +35,7 @@ interactHandlers['hallway_table'] = function () {
 // ---------------------------------------------------------------------------
 interactHandlers['keys'] = function () {
     if (!gameState.inventory.includes("key number 1")) {
+        keysSound.cloneNode().play();
         addItem("key number 1");
         showText("Self", "I took key number 1 from the table.");
         const hotspot = document.getElementById('keys-hotspot');

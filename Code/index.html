@@ -37,11 +37,14 @@
             <img id="tv-drawers-open" src="../pictures/Livingroom/wooden%20door%20opens.png" class="overlay hidden" alt="Open TV Drawers">
             <img id="glass-cabinet-open" src="../pictures/Livingroom/Living%20room%20glass%20door%20open.png" class="overlay hidden" alt="Open Glass Cabinet">
             <img id="both-doors-open" src="../pictures/Livingroom/both%20doors%20opens.png" class="overlay hidden" alt="Both Doors Open">
+            <img id="living-room-paper" src="../pictures/papers/pile.png"
+                style="position:absolute; top:60%; left:48%; width:4%; pointer-events:none; z-index:1; display:none;">
             <div class="hotspot" style="top: 7%; left: 15%; width: 22%; height: 60%;"
                 onclick="interact('glass_cabinet')">
             </div>
             <div class="hotspot" style="top: 63%; left: 65%; width: 17%; height: 20%;" onclick="interact('tv_drawers')">
             </div>
+            <div id="paper-hotspot" class="hotspot" style="top:60%; left:48%; width:4%; height:7%; display:none;" onclick="interact('paper')"></div>
 
             <button class="nav-btn nav-left" onclick="navigateTo('bedroom')">&larr; Bedroom</button>
             <button class="nav-btn nav-right" onclick="navigateTo('kitchen')">Kitchen &rarr;</button>
@@ -131,6 +134,11 @@
                 <p>You didn't make it out in time. You missed your meeting!</p>
                 <button class="nav-btn" style="position: relative;" onclick="location.reload()">Try Again</button>
             </div>
+        </div>
+
+        <!-- Image Preview Modal -->
+        <div id="image-preview-modal" class="hidden" onclick="closeImagePreview()">
+            <img id="image-preview-img" src="" alt="Preview">
         </div>
 
     </div>

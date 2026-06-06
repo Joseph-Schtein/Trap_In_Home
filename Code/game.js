@@ -27,13 +27,8 @@ gameState.phoneRingtone.volume = 0.3;
 
 // Override the window loading sequence
 window.onload = () => {
-    // Generate random 4-digit code
-    targetCode = [
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10)
-    ];
+    // Fixed 4-digit code
+    targetCode = [3, 7, 1, 9];
 
     // Note: Browsers require a click on the document before audio can play
     showOpeningModal();
@@ -145,7 +140,7 @@ function interact(target) {
                 gameState.tvDrawersOpen = true;
                 if (!gameState.tvDrawersOpenedOnce) {
                     gameState.tvDrawersOpenedOnce = true;
-                    showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a note: "The third digit is ${targetCode[2]}."`);
+                    showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a number on it: "${targetCode[2]}"`);
                 }
             } else {
                 gameState.tvDrawersOpen = false;
@@ -158,7 +153,7 @@ function interact(target) {
                 gameState.hallwayTableOpen = true;
                 if (!gameState.hallwayTableOpenedOnce) {
                     gameState.hallwayTableOpenedOnce = true;
-                    showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside: "And the final digit is ${targetCode[3]}! Hope you can open it."`);
+                    showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside with a number: "${targetCode[3]}"`);
                 }
             } else {
                 gameState.hallwayTableOpen = false;
@@ -492,9 +487,9 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("Spouse via Text", `Hey honey! I just landed. Btw, the first digit for your locked drawer is ${targetCode[0]}. I left the other digits around the house!`);
+        showText("Spouse via Text", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
     } else {
-        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. The first digit is ${targetCode[0]}. Find the rest in the other rooms!`);
+        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
     }
 }
 

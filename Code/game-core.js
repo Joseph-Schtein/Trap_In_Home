@@ -21,6 +21,7 @@ const gameState = {
     kitchenDrawerOpen: false,
     fruitsBowlClicked: false,
     kitchenKeysFound: false,
+    kitchenKeysUsed: false,
     upperCabinetOpen: false,
     lowerCabinetOpen: false,
 
@@ -41,7 +42,7 @@ const gameState = {
     isPhoneRinging: false,
 
     // Audio
-    phoneRingtone: new Audio('../Sound/freesound_community-cellphone-ringing-6475.mp3'),
+    phoneRingtone: new Audio('../Sound/cellphone-ringing.mp3'),
     
     // Time
     currentTimeMinutes: 8 * 60 + 23 // Starts at 08:23
@@ -50,6 +51,15 @@ const gameState = {
 // Configure ringtone
 gameState.phoneRingtone.loop = true;
 gameState.phoneRingtone.volume = 0.3;
+
+// Shared cabinet / door sounds
+const cabinetOpenSound = new Audio('../Sound/cabinet-door-open.mp3');
+const cabinetCloseSound = new Audio('../Sound/cabinet-door-close.mp3');
+const paperSound = new Audio('../Sound/paper.mp3');
+const keysSound = new Audio('../Sound/keys.mp3');
+const winningSound = new Audio('../Sound/winning.mp3');
+const correctSound = new Audio('../Sound/correct.mp3');
+const wrongSound = new Audio('../Sound/wrong.mp3');
 
 // ---------------------------------------------------------------------------
 // Interact Handler Registry
@@ -68,13 +78,8 @@ let targetCode = [0, 0, 0, 0]; // populated in window.onload
 // Boot Sequence
 // ---------------------------------------------------------------------------
 window.onload = () => {
-    // Generate random 4-digit code
-    targetCode = [
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10)
-    ];
+    // Fixed 4-digit code
+    targetCode = [3, 7, 1, 9];
 
     showOpeningModal();
 };
@@ -248,6 +253,16 @@ document.addEventListener('click', function (e) {
 // ---------------------------------------------------------------------------
 function addItem(itemName) {
     gameState.inventory.push(itemName);
+
+    // Reveal the paper in the living room once all 4 digits are collected
+    const allDigits = [`${targetCode[0]}`, `${targetCode[1]}`, `${targetCode[2]}`, `${targetCode[3]}`];
+    if (allDigits.every(d => gameState.inventory.includes(d))) {
+        const paperImg = document.getElementById('living-room-paper');
+        const paperHotspot = document.getElementById('paper-hotspot');
+        if (paperImg) paperImg.style.display = 'block';
+        if (paperHotspot) paperHotspot.style.display = 'block';
+    }
+
     const slots = document.getElementById('inventory-slots');
     if (slots) {
         const itemEl = document.createElement('div');
@@ -263,12 +278,31 @@ function addItem(itemName) {
             itemEl.appendChild(imgEl);
         } else if (itemName === "Kitchen Keys") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/keys/keys.png";
+            imgEl.src = "../pictures/keys/cabinet key.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
             imgEl.style.objectFit = "contain";
             itemEl.appendChild(imgEl);
+        } else if (itemName === "Small Key") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/keys/door key.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+        } else if (itemName === "Paper") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/papers/pile.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+            itemEl.onclick = (e) => { e.stopPropagation(); openImagePreview('../pictures/papers/papers.png'); };
+            slots.appendChild(itemEl);
+            return;
         } else {
             itemEl.innerText = itemName;
         }
@@ -323,9 +357,26 @@ function lookItem(itemName) {
         showText("Self", "It's my smartphone. The screen is a bit smudged.");
     } else if (itemName === "Small Key") {
         showText("Self", "A small, ordinary-looking key. It looks like it could fit a door.");
+    } else if (itemName === "Paper") {
+        openImagePreview('../pictures/papers/papers.png');
     } else {
         showText("Self", `I examined the ${itemName}.`);
     }
+}
+
+function openImagePreview(src) {
+    const modal = document.getElementById('image-preview-modal');
+    const img = document.getElementById('image-preview-img');
+    if (modal && img) {
+        img.src = src;
+        modal.classList.remove('hidden');
+        paperSound.cloneNode().play();
+    }
+}
+
+function closeImagePreview() {
+    const modal = document.getElementById('image-preview-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 function useItem(itemName) {
@@ -338,6 +389,13 @@ function useItem(itemName) {
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
         }
+    } else if (itemName === "Kitchen Keys") {
+        if (gameState.currentScene === 'kitchen') {
+            gameState.kitchenKeysUsed = true;
+            showText("Self", "I used the cabinet keys to unlock the cabinets.");
+        } else {
+            showText("Self", "I should use these somewhere in the kitchen.");
+        }
     } else if (itemName === "Small Key") {
         if (gameState.currentScene === 'entrance') {
             if (!gameState.clothesChanged) {
@@ -345,6 +403,7 @@ function useItem(itemName) {
                 return;
             }
             if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
+                winningSound.play();
                 showText("System", "You unlocked the front door and escaped on time! You win!");
             } else {
                 document.getElementById('fail-screen').classList.remove('hidden');
@@ -389,9 +448,12 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("Spouse via Text", `Hey honey! I just landed. Btw, the first digit for your locked drawer is ${targetCode[0]}. I left the other digits around the house!`);
+        showText("Spouse via Text", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
     } else {
-        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. The first digit is ${targetCode[0]}. Find the rest in the other rooms!`);
+        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
+    }
+    if (!gameState.inventory.includes(`Note: ${targetCode[0]}`)) {
+        addItem(`${targetCode[0]}`);
     }
 }
 
@@ -415,6 +477,7 @@ function checkLock() {
     }
 
     if (correct) {
+        correctSound.play();
         gameState.dresserUnlocked = true;
         closeLock();
         if (typeof updateBedroomImages === 'function') {
@@ -426,9 +489,11 @@ function checkLock() {
         showText("System", "*Click* The lock opens.");
         showText("Self", "It opened! Let's see what's inside... ah, a key!");
         if (!gameState.inventory.includes("Small Key")) {
+            keysSound.cloneNode().play();
             addItem("Small Key");
         }
     } else {
+        wrongSound.play();
         showText("System", "The lock doesn't budge. Incorrect code.");
     }
 }
