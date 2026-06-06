@@ -561,8 +561,18 @@ function handleItemDrop(itemName, targetId) {
             showText("Self", "This key doesn't fit here.");
         }
     } else if (itemName === "Living Room Key") {
-        // Curve ball key - doesn't fit anything
-        showText("Self", "This key doesn't seem to fit anywhere. Did someone leave it here as a joke?");
+        if (targetId === "tv_drawers") {
+            if (!gameState.tvDrawersUnlocked) {
+                gameState.tvDrawersUnlocked = true;
+                showText("Self", "I used the Living Room Key to unlock the TV drawers.");
+                removeItem(itemName);
+                interact(targetId);
+            } else {
+                showText("Self", "The TV drawers are already unlocked.");
+            }
+        } else {
+            showText("Self", "This key doesn't fit here.");
+        }
     }
 }
 

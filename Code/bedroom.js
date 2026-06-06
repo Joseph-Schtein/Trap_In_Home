@@ -18,9 +18,8 @@ interactHandlers['phone'] = function () {
         }
 
         // Stop ringtone and update bedroom background
-        gameState.phoneRingtone.pause();
-        gameState.phoneRingtone.currentTime = 0;
-        gameState.isPhoneRinging = false;
+        // Ringtone will be paused when the call is answered or declined
+
 
         document.getElementById('scene-bedroom').style.backgroundImage =
             "url('../pictures/Bedroom/Bedroom%20without%20phone.png')";
@@ -105,7 +104,12 @@ interactHandlers['Drawer'] = function () {
         }
         showText("Self", "The drawer has a 4-digit combination lock. I need the correct code.");
     } else {
-        showText("Self", "The drawer is unlocked. Just some jewelry inside like David said, OK now I need to go to the work.");
+        if (!gameState.inventory.includes("Entrance Door Key")) {
+            addItem("Entrance Door Key");
+            showText("Self", "Oh, under the jewelry... it's the Entrance Door Key!");
+        } else {
+            showText("Self", "The drawer is unlocked. Just some jewelry inside like David said, OK now I need to go to the work.");
+        }
     }
 };
 

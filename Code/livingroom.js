@@ -23,6 +23,11 @@ interactHandlers['paper'] = function () {
 // TV Drawers interaction
 // ---------------------------------------------------------------------------
 interactHandlers['tv_drawers'] = function () {
+    if (!gameState.tvDrawersUnlocked) {
+        showText("Self", "It's locked. I should find a key for this.");
+        return;
+    }
+
     if (!gameState.tvDrawersOpen) {
         gameState.tvDrawersOpen = true;
         cabinetOpenSound.cloneNode().play();

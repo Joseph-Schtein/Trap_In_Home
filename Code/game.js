@@ -87,6 +87,10 @@ function interact(target) {
 
                 // Update the background image to remove the phone visually
                 document.getElementById('scene-bedroom').style.backgroundImage = "url('../pictures/Bedroom/Bedroom%20without%20phone.png')";
+                
+                // Show incoming call UI immediately
+                const callUi = document.getElementById('incoming-call-ui');
+                if (callUi) callUi.classList.remove('hidden');
             }
             break;
 
