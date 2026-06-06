@@ -21,6 +21,7 @@ const gameState = {
     kitchenDrawerOpen: false,
     fruitsBowlClicked: false,
     kitchenKeysFound: false,
+    kitchenKeysUsed: false,
     upperCabinetOpen: false,
     lowerCabinetOpen: false,
 
@@ -258,7 +259,7 @@ function addItem(itemName) {
             itemEl.appendChild(imgEl);
         } else if (itemName === "Kitchen Keys") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/keys/cabinet key.jpg";
+            imgEl.src = "../pictures/keys/cabinet key.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
@@ -274,7 +275,7 @@ function addItem(itemName) {
             itemEl.appendChild(imgEl);
         } else if (itemName === "Paper") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/papers/papers.png";
+            imgEl.src = "../pictures/papers/pile.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
@@ -367,6 +368,13 @@ function useItem(itemName) {
             const minutes = gameState.currentTimeMinutes % 60;
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
+        }
+    } else if (itemName === "Kitchen Keys") {
+        if (gameState.currentScene === 'kitchen') {
+            gameState.kitchenKeysUsed = true;
+            showText("Self", "I used the cabinet keys to unlock the cabinets.");
+        } else {
+            showText("Self", "I should use these somewhere in the kitchen.");
         }
     } else if (itemName === "Small Key") {
         if (gameState.currentScene === 'entrance') {
