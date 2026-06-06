@@ -27,6 +27,10 @@ interactHandlers['island_drawers'] = function () {
     } else {
         gameState.upperCabinetOpen = !gameState.upperCabinetOpen;
         updateKitchenImages();
+        if (gameState.upperCabinetOpen && !gameState.upperCabinetOpenedOnce) {
+            gameState.upperCabinetOpenedOnce = true;
+            showText("Self", `I opened the upper cabinet. Inside, tucked next to some plates, is a note with a number: "${targetCode[1]}"`);
+        }
     }
 };
 
