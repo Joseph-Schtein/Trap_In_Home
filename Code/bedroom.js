@@ -105,7 +105,7 @@ interactHandlers['Drawer'] = function () {
         }
         showText("Self", "The drawer has a 4-digit combination lock. I need the correct code.");
     } else {
-        showText("Self", "The drawer is unlocked. Just some old socks and a spare key inside.");
+        showText("Self", "The drawer is unlocked. Just some jewelry inside like David said, OK now I need to go to the work.");
     }
 };
 

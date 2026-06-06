@@ -8,7 +8,36 @@
 // Front Door interaction
 // ---------------------------------------------------------------------------
 interactHandlers['front_door'] = function () {
-    showText("Self", "The front door is locked tight. I need the key to get out.");
+    if (gameState.entranceDoorOpen) {
+        showText("Self", "The door is open, I'm out of here.");
+        if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
+            winningSound.play();
+            showText("System", "You escaped on time! You win!");
+        } else {
+            document.getElementById('fail-screen').classList.remove('hidden');
+        }
+    } else if (gameState.entranceDoorKeyUsed) {
+        if (!gameState.clothesChanged) {
+            showText("Self", "I can't go to work with my pijama.");
+            // Reset key usage so they have to try again later
+            gameState.entranceDoorKeyUsed = false;
+            return;
+        }
+        gameState.entranceDoorOpen = true;
+        removeItem("Entrance Door Key");
+        updateEntranceImages();
+        showText("Self", "I unlocked the door! Let's go.");
+        setTimeout(() => {
+            if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
+                winningSound.play();
+                showText("System", "You escaped on time! You win!");
+            } else {
+                document.getElementById('fail-screen').classList.remove('hidden');
+            }
+        }, 1500);
+    } else {
+        showText("Self", "The front door is locked tight. I need the key to get out.");
+    }
 };
 
 // ---------------------------------------------------------------------------
@@ -34,15 +63,15 @@ interactHandlers['hallway_table'] = function () {
 // Keys interaction (on the table)
 // ---------------------------------------------------------------------------
 interactHandlers['keys'] = function () {
-    if (!gameState.inventory.includes("key number 1")) {
+    if (!gameState.inventory.includes("Living Room Key")) {
         keysSound.cloneNode().play();
-        addItem("key number 1");
-        showText("Self", "I took key number 1 from the table.");
+        addItem("Living Room Key");
+        showText("Self", "I took the Living Room Key from the table.");
         const hotspot = document.getElementById('keys-hotspot');
         if (hotspot) hotspot.remove();
         updateEntranceImages();
     } else {
-        showText("Self", "I already have key number 1.");
+        showText("Self", "I already have the Living Room Key.");
     }
 };
 
@@ -52,9 +81,15 @@ interactHandlers['keys'] = function () {
 // ---------------------------------------------------------------------------
 function updateEntranceImages() {
     const drawerOpen = gameState.hallwayTableOpen;
-    const keysTaken  = gameState.inventory.includes("key number 1");
+    const keysTaken  = gameState.inventory.includes("Living Room Key");
 
     const entranceScene = document.getElementById('scene-entrance');
+
+    if (gameState.entranceDoorOpen) {
+        entranceScene.style.backgroundImage =
+            "url('../pictures/Entrance%20door/door%20open.png')";
+        return;
+    }
 
     if (drawerOpen && keysTaken) {
         entranceScene.style.backgroundImage =

@@ -226,6 +226,28 @@ body {
     background: #332a15;
 }
 
+.drag-ghost {
+    position: fixed;
+    pointer-events: none;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    opacity: 0.8;
+    transform: translate(-50%, -50%); /* Center on cursor */
+    filter: drop-shadow(0 5px 15px rgba(0,0,0,0.5));
+}
+
+.dragging-ready {
+    animation: pulse-glow 1.5s infinite ease-in-out;
+    border-color: #d4af37 !important;
+}
+
+@keyframes pulse-glow {
+    0% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+    50% { box-shadow: 0 0 15px rgba(212, 175, 55, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(212, 175, 55, 0.2); }
+}
+
 /* Global Utilities */
 .hidden {
     display: none !important;

@@ -21,7 +21,9 @@ const gameState = {
     kitchenDrawerOpen: false,
     fruitsBowlClicked: false,
     kitchenKeysFound: false,
-    kitchenKeysUsed: false,
+    kitchenKeysUsed: false, // Legacy fallback
+    upperCabinetUnlocked: false,
+    lowerCabinetUnlocked: false,
     upperCabinetOpen: false,
     lowerCabinetOpen: false,
 
@@ -34,6 +36,7 @@ const gameState = {
     // Entrance states
     hallwayTableOpen: false,
     hallwayTableOpenedOnce: false,
+    entranceDoorOpen: false,
 
     // Phone / audio states
     hasDeadboltKey: false,
@@ -41,9 +44,13 @@ const gameState = {
     callDeclinedCount: 0,
     isPhoneRinging: false,
 
+    // Drag and Drop
+    activeDragItem: null,
+    entranceDoorKeyUsed: false,
+
     // Audio
     phoneRingtone: new Audio('../Sound/cellphone-ringing.mp3'),
-    
+
     // Time
     currentTimeMinutes: 8 * 60 + 23 // Starts at 08:23
 };
@@ -80,6 +87,11 @@ let targetCode = [0, 0, 0, 0]; // populated in window.onload
 window.onload = () => {
     // Fixed 4-digit code
     targetCode = [3, 7, 1, 9];
+
+    // Start a timer to advance time by 1 game minute every 40 real seconds
+    setInterval(() => {
+        advanceTime(1);
+    }, 40000);
 
     showOpeningModal();
 };
@@ -267,6 +279,7 @@ function addItem(itemName) {
     if (slots) {
         const itemEl = document.createElement('div');
         itemEl.className = 'inv-item';
+        itemEl.setAttribute('data-item-name', itemName);
 
         if (itemName === "My Phone") {
             const imgEl = document.createElement('img');
@@ -278,15 +291,23 @@ function addItem(itemName) {
             itemEl.appendChild(imgEl);
         } else if (itemName === "Kitchen Keys") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/keys/cabinet key.png";
+            imgEl.src = "../pictures/keys/KitchenKey.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
             imgEl.style.objectFit = "contain";
             itemEl.appendChild(imgEl);
-        } else if (itemName === "Small Key") {
+        } else if (itemName === "Entrance Door Key") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/keys/door key.png";
+            imgEl.src = "../pictures/keys/entranceDoorKey.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+        } else if (itemName === "Living Room Key") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/keys/Livingroom.png";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
@@ -312,7 +333,28 @@ function addItem(itemName) {
     }
 }
 
+function removeItem(itemName) {
+    const index = gameState.inventory.indexOf(itemName);
+    if (index > -1) {
+        gameState.inventory.splice(index, 1);
+    }
+    const slots = document.getElementById('inventory-slots');
+    if (slots) {
+        const children = Array.from(slots.children);
+        for (let i = 0; i < children.length; i++) {
+            if (children[i].getAttribute('data-item-name') === itemName) {
+                slots.removeChild(children[i]);
+                break;
+            }
+        }
+    }
+}
+
 function showInventoryOptions(e, itemName) {
+    if (gameState.activeDragItem === itemName) {
+        e.stopPropagation();
+        return;
+    }
     e.stopPropagation();
     let menu = document.getElementById('inventory-context-menu');
     if (!menu) {
@@ -355,8 +397,10 @@ function showInventoryOptions(e, itemName) {
 function lookItem(itemName) {
     if (itemName === "My Phone") {
         showText("Self", "It's my smartphone. The screen is a bit smudged.");
-    } else if (itemName === "Small Key") {
-        showText("Self", "A small, ordinary-looking key. It looks like it could fit a door.");
+    } else if (itemName === "Entrance Door Key") {
+        showText("Self", "The key to the front door.");
+    } else if (itemName === "Living Room Key") {
+        showText("Self", "A key for the living room.");
     } else if (itemName === "Paper") {
         openImagePreview('../pictures/papers/papers.png');
     } else {
@@ -389,30 +433,136 @@ function useItem(itemName) {
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
         }
-    } else if (itemName === "Kitchen Keys") {
-        if (gameState.currentScene === 'kitchen') {
-            gameState.kitchenKeysUsed = true;
-            showText("Self", "I used the cabinet keys to unlock the cabinets.");
-        } else {
-            showText("Self", "I should use these somewhere in the kitchen.");
-        }
-    } else if (itemName === "Small Key") {
-        if (gameState.currentScene === 'entrance') {
-            if (!gameState.clothesChanged) {
-                showText("Self", "I can't go to work with my pijama.");
-                return;
-            }
-            if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
-                winningSound.play();
-                showText("System", "You unlocked the front door and escaped on time! You win!");
-            } else {
-                document.getElementById('fail-screen').classList.remove('hidden');
-            }
-        } else {
-            showText("Self", "I can't use this here. I need to find what it unlocks.");
+    } else if (itemName === "Kitchen Keys" || itemName === "Living Room Key" || itemName === "Entrance Door Key") {
+        gameState.activeDragItem = itemName;
+        // Find the element and highlight it
+        const slots = document.getElementById('inventory-slots');
+        if (slots) {
+            Array.from(slots.children).forEach(child => {
+                if (child.getAttribute('data-item-name') === itemName) {
+                    child.classList.add('dragging-ready');
+                } else {
+                    child.classList.remove('dragging-ready');
+                }
+            });
         }
     } else {
         showText("Self", `I tried to use the ${itemName}, but nothing happened.`);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Drag and Drop Logic for Items
+// ---------------------------------------------------------------------------
+let dragGhost = null;
+
+// Prevent native browser drag-and-drop to avoid conflicting ghost images
+document.addEventListener('dragstart', (e) => {
+    if (e.target.tagName === 'IMG' || e.target.closest('.inv-item')) {
+        e.preventDefault();
+    }
+});
+
+document.addEventListener('pointerdown', (e) => {
+    if (!gameState.activeDragItem) return;
+    
+    // Check if we clicked on the active drag item
+    const invItem = e.target.closest('.inv-item');
+    if (invItem && invItem.getAttribute('data-item-name') === gameState.activeDragItem) {
+        e.preventDefault(); // Prevent default browser drag or scrolling
+        
+        // Create ghost
+        dragGhost = document.createElement('img');
+        dragGhost.className = 'drag-ghost';
+        
+        // Get the image source from the inventory item
+        const img = invItem.querySelector('img');
+        if (img) {
+            dragGhost.src = img.src;
+        } else {
+            // Fallback for text items
+            return; 
+        }
+        
+        document.body.appendChild(dragGhost);
+        dragGhost.style.left = e.clientX + 'px';
+        dragGhost.style.top = e.clientY + 'px';
+    }
+}, { passive: false });
+
+document.addEventListener('pointermove', (e) => {
+    if (dragGhost) {
+        dragGhost.style.left = e.clientX + 'px';
+        dragGhost.style.top = e.clientY + 'px';
+    }
+});
+
+document.addEventListener('pointerup', (e) => {
+    if (dragGhost) {
+        // Find what we dropped it on
+        dragGhost.style.display = 'none'; // hide ghost so elementFromPoint works
+        const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+        dragGhost.style.display = '';
+        
+        if (elemBelow && elemBelow.classList.contains('hotspot')) {
+            const onclickAttr = elemBelow.getAttribute('onclick');
+            if (onclickAttr) {
+                const match = onclickAttr.match(/interact\(['"]([^'"]+)['"]\)/);
+                if (match) {
+                    const targetId = match[1];
+                    handleItemDrop(gameState.activeDragItem, targetId);
+                }
+            }
+        } else {
+            showText("Self", "I can't use this here.");
+        }
+        
+        // Cleanup drag state
+        dragGhost.remove();
+        dragGhost = null;
+        gameState.activeDragItem = null;
+        
+        // Remove highlight
+        const slots = document.getElementById('inventory-slots');
+        if (slots) {
+            Array.from(slots.children).forEach(child => child.classList.remove('dragging-ready'));
+        }
+    }
+});
+
+function handleItemDrop(itemName, targetId) {
+    if (itemName === "Kitchen Keys") {
+        if (targetId === "island_drawers") {
+            if (!gameState.upperCabinetUnlocked) {
+                gameState.upperCabinetUnlocked = true;
+                showText("Self", "I used the keys to unlock the upper cabinet.");
+                if (gameState.lowerCabinetUnlocked) removeItem(itemName);
+                interact(targetId);
+            } else {
+                showText("Self", "This cabinet is already unlocked.");
+            }
+        } else if (targetId === "oven") {
+            if (!gameState.lowerCabinetUnlocked) {
+                gameState.lowerCabinetUnlocked = true;
+                showText("Self", "I used the keys to unlock the lower cabinet.");
+                if (gameState.upperCabinetUnlocked) removeItem(itemName);
+                interact(targetId);
+            } else {
+                showText("Self", "This cabinet is already unlocked.");
+            }
+        } else {
+            showText("Self", "These keys don't fit here.");
+        }
+    } else if (itemName === "Entrance Door Key") {
+        if (targetId === "front_door") {
+            gameState.entranceDoorKeyUsed = true;
+            interact(targetId);
+        } else {
+            showText("Self", "This key doesn't fit here.");
+        }
+    } else if (itemName === "Living Room Key") {
+        // Curve ball key - doesn't fit anything
+        showText("Self", "This key doesn't seem to fit anywhere. Did someone leave it here as a joke?");
     }
 }
 
@@ -487,11 +637,7 @@ function checkLock() {
             if (drawerEl) drawerEl.classList.remove('hidden');
         }
         showText("System", "*Click* The lock opens.");
-        showText("Self", "It opened! Let's see what's inside... ah, a key!");
-        if (!gameState.inventory.includes("Small Key")) {
-            keysSound.cloneNode().play();
-            addItem("Small Key");
-        }
+        showText("Self", "It opened! Let's see what's inside... ah, just some jewelry like David said.");
     } else {
         wrongSound.play();
         showText("System", "The lock doesn't budge. Incorrect code.");

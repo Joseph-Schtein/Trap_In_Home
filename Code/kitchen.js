@@ -25,7 +25,7 @@ interactHandlers['kitchen_middle'] = function () {
 interactHandlers['island_drawers'] = function () {
     if (!gameState.kitchenKeysFound) {
         showText("Self", "You need a key to open the cabinet");
-    } else if (!gameState.kitchenKeysUsed) {
+    } else if (!gameState.upperCabinetUnlocked) {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
         gameState.upperCabinetOpen = !gameState.upperCabinetOpen;
@@ -45,7 +45,7 @@ interactHandlers['island_drawers'] = function () {
 interactHandlers['oven'] = function () {
     if (!gameState.kitchenKeysFound) {
         showText("Self", "You need a key to open the cabinet");
-    } else if (!gameState.kitchenKeysUsed) {
+    } else if (!gameState.lowerCabinetUnlocked) {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
         gameState.lowerCabinetOpen = !gameState.lowerCabinetOpen;
