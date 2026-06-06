@@ -13,6 +13,7 @@ interactHandlers['tv_drawers'] = function () {
         if (!gameState.tvDrawersOpenedOnce) {
             gameState.tvDrawersOpenedOnce = true;
             showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a number on it: "${targetCode[2]}"`);
+            addItem(`Note: ${targetCode[2]}`);
         }
     } else {
         gameState.tvDrawersOpen = false;

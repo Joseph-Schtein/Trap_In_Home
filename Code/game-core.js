@@ -388,6 +388,9 @@ function triggerPhoneDialogue() {
     } else {
         showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
     }
+    if (!gameState.inventory.includes(`Note: ${targetCode[0]}`)) {
+        addItem(`Note: ${targetCode[0]}`);
+    }
 }
 
 // ---------------------------------------------------------------------------

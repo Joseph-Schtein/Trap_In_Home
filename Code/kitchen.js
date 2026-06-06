@@ -30,6 +30,7 @@ interactHandlers['island_drawers'] = function () {
         if (gameState.upperCabinetOpen && !gameState.upperCabinetOpenedOnce) {
             gameState.upperCabinetOpenedOnce = true;
             showText("Self", `I opened the upper cabinet. Inside, tucked next to some plates, is a note with a number: "${targetCode[1]}"`);
+            addItem(`Note: ${targetCode[1]}`);
         }
     }
 };

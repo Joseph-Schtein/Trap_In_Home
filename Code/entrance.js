@@ -20,6 +20,7 @@ interactHandlers['hallway_table'] = function () {
         if (!gameState.hallwayTableOpenedOnce) {
             gameState.hallwayTableOpenedOnce = true;
             showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside with a number: "${targetCode[3]}"`);
+            addItem(`Note: ${targetCode[3]}`);
         }
     } else {
         gameState.hallwayTableOpen = false;
