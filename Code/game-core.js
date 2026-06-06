@@ -258,12 +258,31 @@ function addItem(itemName) {
             itemEl.appendChild(imgEl);
         } else if (itemName === "Kitchen Keys") {
             const imgEl = document.createElement('img');
-            imgEl.src = "../pictures/keys/keys.png";
+            imgEl.src = "../pictures/keys/cabinet key.jpg";
             imgEl.alt = itemName;
             imgEl.style.width = "100%";
             imgEl.style.height = "100%";
             imgEl.style.objectFit = "contain";
             itemEl.appendChild(imgEl);
+        } else if (itemName === "Small Key") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/keys/door key.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+        } else if (itemName === "Paper") {
+            const imgEl = document.createElement('img');
+            imgEl.src = "../pictures/papers/papers.png";
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
+            itemEl.onclick = (e) => { e.stopPropagation(); openImagePreview('../pictures/papers/papers.png'); };
+            slots.appendChild(itemEl);
+            return;
         } else {
             itemEl.innerText = itemName;
         }
@@ -318,9 +337,25 @@ function lookItem(itemName) {
         showText("Self", "It's my smartphone. The screen is a bit smudged.");
     } else if (itemName === "Small Key") {
         showText("Self", "A small, ordinary-looking key. It looks like it could fit a door.");
+    } else if (itemName === "Paper") {
+        openImagePreview('../pictures/papers/papers.png');
     } else {
         showText("Self", `I examined the ${itemName}.`);
     }
+}
+
+function openImagePreview(src) {
+    const modal = document.getElementById('image-preview-modal');
+    const img = document.getElementById('image-preview-img');
+    if (modal && img) {
+        img.src = src;
+        modal.classList.remove('hidden');
+    }
+}
+
+function closeImagePreview() {
+    const modal = document.getElementById('image-preview-modal');
+    if (modal) modal.classList.add('hidden');
 }
 
 function useItem(itemName) {

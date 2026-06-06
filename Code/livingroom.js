@@ -5,6 +5,20 @@
 // =============================================================================
 
 // ---------------------------------------------------------------------------
+// Paper interaction (pick up from floor)
+// ---------------------------------------------------------------------------
+interactHandlers['paper'] = function () {
+    if (!gameState.inventory.includes("Paper")) {
+        addItem("Paper");
+        const paperEl = document.getElementById('living-room-paper');
+        if (paperEl) paperEl.style.display = 'none';
+        const hotspot = document.getElementById('paper-hotspot');
+        if (hotspot) hotspot.remove();
+        showText("Self", "I picked up the paper.");
+    }
+};
+
+// ---------------------------------------------------------------------------
 // TV Drawers interaction
 // ---------------------------------------------------------------------------
 interactHandlers['tv_drawers'] = function () {
