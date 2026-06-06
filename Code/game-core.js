@@ -68,13 +68,8 @@ let targetCode = [0, 0, 0, 0]; // populated in window.onload
 // Boot Sequence
 // ---------------------------------------------------------------------------
 window.onload = () => {
-    // Generate random 4-digit code
-    targetCode = [
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10),
-        Math.floor(Math.random() * 10)
-    ];
+    // Fixed 4-digit code
+    targetCode = [3, 7, 1, 9];
 
     showOpeningModal();
 };
@@ -389,9 +384,9 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("Spouse via Text", `Hey honey! I just landed. Btw, the first digit for your locked drawer is ${targetCode[0]}. I left the other digits around the house!`);
+        showText("Spouse via Text", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
     } else {
-        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. The first digit is ${targetCode[0]}. Find the rest in the other rooms!`);
+        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
     }
 }
 
