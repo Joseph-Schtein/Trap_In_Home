@@ -12,7 +12,7 @@ interactHandlers['tv_drawers'] = function () {
         gameState.tvDrawersOpen = true;
         if (!gameState.tvDrawersOpenedOnce) {
             gameState.tvDrawersOpenedOnce = true;
-            showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a note: "The third digit is ${targetCode[2]}."`);
+            showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a number on it: "${targetCode[2]}"`);
         }
     } else {
         gameState.tvDrawersOpen = false;
