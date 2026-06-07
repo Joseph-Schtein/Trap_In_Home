@@ -2,6 +2,8 @@
 
 **Created by:** Joseph Schtein & Rina Oksman
 
+🎮 **[Play the game](https://joseph-schtein.github.io/Trap_In_Home/)**
+
 ---
 
 ## About the Game
