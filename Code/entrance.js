@@ -15,7 +15,9 @@ interactHandlers['front_door'] = function () {
             showText("Self", "The door is open, I'm out of here.");
             if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
                 winningSound.play();
-                showText("System", "You escaped on time! You win!");
+                showText("System", "You escaped on time! You win!", () => {
+                    document.getElementById('win-screen').classList.remove('hidden');
+                });
             } else {
                 document.getElementById('fail-screen').classList.remove('hidden');
             }

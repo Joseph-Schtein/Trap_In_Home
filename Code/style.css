@@ -585,6 +585,35 @@ body {
     margin-bottom: 40px;
 }
 
+#win-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    z-index: 300;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #d4af37;
+    text-align: center;
+}
+
+.win-content h2 {
+    font-size: 4rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px rgba(212, 175, 55, 0.7);
+}
+
+.win-content p {
+    font-size: 1.5rem;
+    color: #ccc;
+    margin-bottom: 40px;
+}
+
 /* Paper Puzzle UI */
 #paper-puzzle-ui {
     position: absolute;
