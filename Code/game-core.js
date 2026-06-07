@@ -433,19 +433,6 @@ function useItem(itemName) {
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
         }
-    } else if (itemName === "Kitchen Keys" || itemName === "Living Room Key" || itemName === "Entrance Door Key") {
-        gameState.activeDragItem = itemName;
-        // Find the element and highlight it
-        const slots = document.getElementById('inventory-slots');
-        if (slots) {
-            Array.from(slots.children).forEach(child => {
-                if (child.getAttribute('data-item-name') === itemName) {
-                    child.classList.add('dragging-ready');
-                } else {
-                    child.classList.remove('dragging-ready');
-                }
-            });
-        }
     } else {
         showText("Self", `I tried to use the ${itemName}, but nothing happened.`);
     }
@@ -455,6 +442,9 @@ function useItem(itemName) {
 // Drag and Drop Logic for Items
 // ---------------------------------------------------------------------------
 let dragGhost = null;
+let dragStartX = 0;
+let dragStartY = 0;
+let isDraggingAction = false;
 
 // Prevent native browser drag-and-drop to avoid conflicting ghost images
 document.addEventListener('dragstart', (e) => {
@@ -464,63 +454,103 @@ document.addEventListener('dragstart', (e) => {
 });
 
 document.addEventListener('pointerdown', (e) => {
-    if (!gameState.activeDragItem) return;
-    
-    // Check if we clicked on the active drag item
     const invItem = e.target.closest('.inv-item');
-    if (invItem && invItem.getAttribute('data-item-name') === gameState.activeDragItem) {
-        e.preventDefault(); // Prevent default browser drag or scrolling
+    if (invItem) {
+        const itemName = invItem.getAttribute('data-item-name');
         
-        // Create ghost
-        dragGhost = document.createElement('img');
-        dragGhost.className = 'drag-ghost';
-        
-        // Get the image source from the inventory item
-        const img = invItem.querySelector('img');
-        if (img) {
-            dragGhost.src = img.src;
-        } else {
-            // Fallback for text items
-            return; 
+        // If it's a draggable item
+        if (itemName === "Kitchen Keys" || itemName === "Living Room Key" || itemName === "Entrance Door Key") {
+            gameState.activeDragItem = itemName;
+            dragStartX = e.clientX;
+            dragStartY = e.clientY;
+            isDraggingAction = false;
+            
+            e.preventDefault(); // Prevent default browser drag or scrolling
+            
+            // Create ghost
+            dragGhost = document.createElement('img');
+            dragGhost.className = 'drag-ghost';
+            
+            // Get the image source from the inventory item
+            const img = invItem.querySelector('img');
+            if (img) {
+                dragGhost.src = img.src;
+            } else {
+                return; 
+            }
+            
+            dragGhost.style.display = 'none'; // Hide until we actually move
+            document.body.appendChild(dragGhost);
+            dragGhost.style.left = e.clientX + 'px';
+            dragGhost.style.top = e.clientY + 'px';
         }
-        
-        document.body.appendChild(dragGhost);
-        dragGhost.style.left = e.clientX + 'px';
-        dragGhost.style.top = e.clientY + 'px';
     }
 }, { passive: false });
 
 document.addEventListener('pointermove', (e) => {
     if (dragGhost) {
-        dragGhost.style.left = e.clientX + 'px';
-        dragGhost.style.top = e.clientY + 'px';
+        if (!isDraggingAction) {
+            const dx = e.clientX - dragStartX;
+            const dy = e.clientY - dragStartY;
+            if (dx * dx + dy * dy > 25) { // 5px threshold for drag
+                isDraggingAction = true;
+                dragGhost.style.display = '';
+                
+                // Highlight item
+                const slots = document.getElementById('inventory-slots');
+                if (slots) {
+                    Array.from(slots.children).forEach(child => {
+                        if (child.getAttribute('data-item-name') === gameState.activeDragItem) {
+                            child.classList.add('dragging-ready');
+                        }
+                    });
+                }
+                
+                // Hide context menu if open
+                const menu = document.getElementById('inventory-context-menu');
+                if (menu) menu.classList.add('hidden');
+            }
+        }
+        
+        if (isDraggingAction) {
+            dragGhost.style.left = e.clientX + 'px';
+            dragGhost.style.top = e.clientY + 'px';
+        }
     }
 });
 
 document.addEventListener('pointerup', (e) => {
     if (dragGhost) {
-        // Find what we dropped it on
-        dragGhost.style.display = 'none'; // hide ghost so elementFromPoint works
-        const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
-        dragGhost.style.display = '';
-        
-        if (elemBelow && elemBelow.classList.contains('hotspot')) {
-            const onclickAttr = elemBelow.getAttribute('onclick');
-            if (onclickAttr) {
-                const match = onclickAttr.match(/interact\(['"]([^'"]+)['"]\)/);
-                if (match) {
-                    const targetId = match[1];
-                    handleItemDrop(gameState.activeDragItem, targetId);
+        if (isDraggingAction) {
+            // Find what we dropped it on
+            dragGhost.style.display = 'none'; // hide ghost so elementFromPoint works
+            const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
+            dragGhost.style.display = '';
+            
+            if (elemBelow && elemBelow.classList.contains('hotspot')) {
+                const onclickAttr = elemBelow.getAttribute('onclick');
+                if (onclickAttr) {
+                    const match = onclickAttr.match(/interact\(['"]([^'"]+)['"]\)/);
+                    if (match) {
+                        const targetId = match[1];
+                        handleItemDrop(gameState.activeDragItem, targetId);
+                    }
                 }
+            } else {
+                showText("Self", "I can't use this here.");
             }
+            
+            // Delay clearing activeDragItem so click events don't open the context menu
+            setTimeout(() => {
+                gameState.activeDragItem = null;
+            }, 50);
         } else {
-            showText("Self", "I can't use this here.");
+            gameState.activeDragItem = null;
         }
         
         // Cleanup drag state
         dragGhost.remove();
         dragGhost = null;
-        gameState.activeDragItem = null;
         
         // Remove highlight
         const slots = document.getElementById('inventory-slots');
