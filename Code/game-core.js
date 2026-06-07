@@ -266,13 +266,15 @@ document.addEventListener('click', function (e) {
 function addItem(itemName) {
     gameState.inventory.push(itemName);
 
-    // Reveal the paper in the living room once all 4 digits are collected
-    const allDigits = [`${targetCode[0]}`, `${targetCode[1]}`, `${targetCode[2]}`, `${targetCode[3]}`];
-    if (allDigits.every(d => gameState.inventory.includes(d))) {
+    // Reveal the paper in the living room once all 4 pieces are collected
+    const allPieces = [`Piece of Paper ${targetCode[0]}`, `Piece of Paper ${targetCode[1]}`, `Piece of Paper ${targetCode[2]}`, `Piece of Paper ${targetCode[3]}`];
+    if (allPieces.every(p => gameState.inventory.includes(p))) {
         const paperImg = document.getElementById('living-room-paper');
         const paperHotspot = document.getElementById('paper-hotspot');
-        if (paperImg) paperImg.style.display = 'block';
-        if (paperHotspot) paperHotspot.style.display = 'block';
+        // Actually, the user wants the pieces scattered around. The pile might be a legacy graphic.
+        // We will keep it but hide it since they collect the pieces individually.
+        if (paperImg) paperImg.style.display = 'none';
+        if (paperHotspot) paperHotspot.style.display = 'none';
     }
 
     const slots = document.getElementById('inventory-slots');
@@ -324,6 +326,15 @@ function addItem(itemName) {
             itemEl.onclick = (e) => { e.stopPropagation(); openImagePreview('../pictures/papers/papers.png'); };
             slots.appendChild(itemEl);
             return;
+        } else if (itemName.startsWith("Piece of Paper")) {
+            const digit = itemName.split(" ")[3];
+            const imgEl = document.createElement('img');
+            imgEl.src = `../pictures/papers/cropped_piece_${digit}_v2.png`;
+            imgEl.alt = itemName;
+            imgEl.style.width = "100%";
+            imgEl.style.height = "100%";
+            imgEl.style.objectFit = "contain";
+            itemEl.appendChild(imgEl);
         } else {
             itemEl.innerText = itemName;
         }
@@ -403,6 +414,8 @@ function lookItem(itemName) {
         showText("Self", "A key for the living room.");
     } else if (itemName === "Paper") {
         openImagePreview('../pictures/papers/papers.png');
+    } else if (itemName.startsWith("Piece of Paper")) {
+        openPaperPuzzle();
     } else {
         showText("Self", `I examined the ${itemName}.`);
     }
@@ -433,6 +446,8 @@ function useItem(itemName) {
             const timeString = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}`;
             showText("Self", `I used the phone to check the time. It is ${timeString}.`);
         }
+    } else if (itemName.startsWith("Piece of Paper")) {
+        openPaperPuzzle();
     } else {
         showText("Self", `I tried to use the ${itemName}, but nothing happened.`);
     }
@@ -642,8 +657,8 @@ function triggerPhoneDialogue() {
     } else {
         showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
     }
-    if (!gameState.inventory.includes(`Note: ${targetCode[0]}`)) {
-        addItem(`${targetCode[0]}`);
+    if (!gameState.inventory.includes(`Piece of Paper ${targetCode[0]}`)) {
+        addItem(`Piece of Paper ${targetCode[0]}`);
     }
 }
 
@@ -687,4 +702,195 @@ function checkLock() {
 function closeLock() {
     document.getElementById('combination-lock-ui').classList.add('hidden');
     document.getElementById('game-container').classList.remove('lock-active');
+}
+
+// ---------------------------------------------------------------------------
+// Paper Puzzle UI and Logic
+// ---------------------------------------------------------------------------
+const puzzleLayoutData = {
+    "3": { w: 298, h: 620, targetX: 0, targetY: 0 },
+    "7": { w: 332, h: 620, targetX: 127.5, targetY: 0 },
+    "1": { w: 460.5, h: 620, targetX: 406, targetY: 0 },
+    "9": { w: 401.5, h: 620, targetX: 472.5, targetY: 0 }
+};
+
+let puzzleGroups = {}; // Maps digit to its group ID. Pieces in the same group move together.
+let nextGroupId = 1;
+
+function openPaperPuzzle() {
+    const ui = document.getElementById('paper-puzzle-ui');
+    if (!ui) return;
+    
+    document.getElementById('game-container').classList.add('dialogue-active'); // Reusing this to block underlying clicks
+    ui.classList.remove('hidden');
+    
+    const container = document.getElementById('paper-puzzle-container');
+    container.innerHTML = '';
+    
+    // Reset groups
+    puzzleGroups = {};
+    nextGroupId = 1;
+    
+    // Find pieces in inventory
+    const piecesInInv = [];
+    targetCode.forEach(digit => {
+        if (gameState.inventory.includes(`Piece of Paper ${digit}`)) {
+            piecesInInv.push(digit.toString());
+        }
+    });
+    
+    // Spawn pieces
+    piecesInInv.forEach(digit => {
+        const layout = puzzleLayoutData[digit];
+        const pieceEl = document.createElement('div');
+        pieceEl.className = 'puzzle-piece';
+        pieceEl.id = `puzzle-piece-${digit}`;
+        pieceEl.style.width = layout.w + 'px';
+        pieceEl.style.height = layout.h + 'px';
+        
+        // Random starting position
+        const startX = Math.random() * (874 - layout.w);
+        const startY = Math.random() * (620 - layout.h);
+        pieceEl.style.left = startX + 'px';
+        pieceEl.style.top = startY + 'px';
+        
+        // Save state
+        pieceEl.dataset.digit = digit;
+        pieceEl.dataset.groupId = nextGroupId++;
+        puzzleGroups[digit] = pieceEl.dataset.groupId;
+        
+        const img = document.createElement('img');
+        img.src = `../pictures/papers/cropped_piece_${digit}_v2.png`;
+        img.className = 'puzzle-piece-img';
+        img.style.width = '100%';
+        img.style.height = '100%';
+        pieceEl.appendChild(img);
+        
+        container.appendChild(pieceEl);
+        
+        setupPuzzleDrag(pieceEl);
+    });
+}
+
+function closePaperPuzzle() {
+    document.getElementById('paper-puzzle-ui').classList.add('hidden');
+    document.getElementById('game-container').classList.remove('dialogue-active');
+}
+
+function setupPuzzleDrag(el) {
+    let startX, startY, initialLefts = {}, initialTops = {};
+    const digit = el.dataset.digit;
+    
+    el.onpointerdown = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        startX = e.clientX;
+        startY = e.clientY;
+        
+        const groupId = el.dataset.groupId;
+        const allPieces = Array.from(document.querySelectorAll('.puzzle-piece'));
+        
+        // Bring all pieces in this group to front
+        allPieces.forEach(p => {
+            if (p.dataset.groupId === groupId) {
+                p.style.zIndex = '10';
+                initialLefts[p.id] = parseFloat(p.style.left);
+                initialTops[p.id] = parseFloat(p.style.top);
+            } else {
+                p.style.zIndex = '1';
+            }
+        });
+        
+        document.onpointermove = (ev) => {
+            ev.preventDefault();
+            const dx = ev.clientX - startX;
+            const dy = ev.clientY - startY;
+            
+            // Move all pieces in the group
+            allPieces.forEach(p => {
+                if (p.dataset.groupId === groupId) {
+                    p.style.left = (initialLefts[p.id] + dx) + 'px';
+                    p.style.top = (initialTops[p.id] + dy) + 'px';
+                }
+            });
+        };
+        
+        document.onpointerup = () => {
+            document.onpointermove = null;
+            document.onpointerup = null;
+            checkPuzzleSnaps(groupId);
+        };
+    };
+}
+
+function checkPuzzleSnaps(movedGroupId) {
+    const allPieces = Array.from(document.querySelectorAll('.puzzle-piece'));
+    const movedPieces = allPieces.filter(p => p.dataset.groupId === movedGroupId);
+    const otherPieces = allPieces.filter(p => p.dataset.groupId !== movedGroupId);
+    
+    if (otherPieces.length === 0) return;
+    
+    let snapped = false;
+    
+    // Check if any moved piece can snap to any other piece
+    for (let mp of movedPieces) {
+        if (snapped) break;
+        const mpDigit = mp.dataset.digit;
+        const mpLayout = puzzleLayoutData[mpDigit];
+        const mpLeft = parseFloat(mp.style.left);
+        const mpTop = parseFloat(mp.style.top);
+        
+        for (let op of otherPieces) {
+            const opDigit = op.dataset.digit;
+            const opLayout = puzzleLayoutData[opDigit];
+            const opLeft = parseFloat(op.style.left);
+            const opTop = parseFloat(op.style.top);
+            
+            // Calculate theoretical position of mp if it were snapped correctly to op
+            // target offset relative to full canvas: mpLayout.targetX - opLayout.targetX
+            const dxTarget = mpLayout.targetX - opLayout.targetX;
+            const dyTarget = mpLayout.targetY - opLayout.targetY;
+            
+            const expectedMpLeft = opLeft + dxTarget;
+            const expectedMpTop = opTop + dyTarget;
+            
+            // Calculate distance
+            const dist = Math.hypot(mpLeft - expectedMpLeft, mpTop - expectedMpTop);
+            
+            if (dist < 40) { // 40px snap threshold
+                // Snap!
+                snapped = true;
+                
+                // Adjust all moved pieces by the correction vector
+                const fixX = expectedMpLeft - mpLeft;
+                const fixY = expectedMpTop - mpTop;
+                
+                movedPieces.forEach(p => {
+                    p.style.left = (parseFloat(p.style.left) + fixX) + 'px';
+                    p.style.top = (parseFloat(p.style.top) + fixY) + 'px';
+                    // Merge groups
+                    p.dataset.groupId = op.dataset.groupId;
+                    puzzleGroups[p.dataset.digit] = op.dataset.groupId;
+                });
+                
+                paperSound.cloneNode().play();
+                break;
+            }
+        }
+    }
+    
+    if (snapped) {
+        // Check if all 4 are in the same group
+        const allGroupIds = allPieces.map(p => p.dataset.groupId);
+        const uniqueGroups = new Set(allGroupIds);
+        
+        if (allPieces.length === 4 && uniqueGroups.size === 1) {
+            // Puzzle completed!
+            setTimeout(() => {
+                winningSound.cloneNode().play();
+                showText("Self", "It's a code! I should remember this: " + targetCode.join(""));
+            }, 500);
+        }
+    }
 }

@@ -584,3 +584,71 @@ body {
     color: #ccc;
     margin-bottom: 40px;
 }
+
+/* Paper Puzzle UI */
+#paper-puzzle-ui {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 250;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.paper-puzzle-header {
+    margin-bottom: 10px;
+    width: 100%;
+    text-align: center;
+    color: #d4af37;
+}
+
+.paper-puzzle-header h2 {
+    margin: 0;
+    margin-bottom: 10px;
+}
+
+.paper-puzzle-footer {
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+    z-index: 260;
+}
+
+.paper-puzzle-footer .nav-btn {
+    position: relative;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    transform: none;
+}
+
+#paper-puzzle-container {
+    position: relative;
+    width: 874px; /* Scaled down 50% from A4 1748 */
+    height: 620px; /* Scaled down 50% from A4 1240 */
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px dashed #444;
+    overflow: hidden;
+    transform: scale(0.85);
+}
+
+.puzzle-piece {
+    position: absolute;
+    cursor: grab;
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.6));
+    user-select: none;
+}
+
+.puzzle-piece:active {
+    cursor: grabbing;
+    z-index: 10;
+}
+
+.puzzle-piece-img {
+    pointer-events: none;
+}

@@ -33,8 +33,8 @@ interactHandlers['tv_drawers'] = function () {
         cabinetOpenSound.cloneNode().play();
         if (!gameState.tvDrawersOpenedOnce) {
             gameState.tvDrawersOpenedOnce = true;
-            showText("Self", `I opened the wooden TV drawers. Among old cables, there's a receipt with a number on it: "${targetCode[2]}"`);
-            addItem(`${targetCode[2]}`);
+            showText("Self", "A bunch of junk... Oh wait, here's a torn piece of paper with a digit!");
+            addItem(`Piece of Paper ${targetCode[2]}`);
         }
     } else {
         gameState.tvDrawersOpen = false;

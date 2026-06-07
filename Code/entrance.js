@@ -9,32 +9,26 @@
 // ---------------------------------------------------------------------------
 interactHandlers['front_door'] = function () {
     if (gameState.entranceDoorOpen) {
-        showText("Self", "The door is open, I'm out of here.");
-        if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
-            winningSound.play();
-            showText("System", "You escaped on time! You win!");
-        } else {
-            document.getElementById('fail-screen').classList.remove('hidden');
-        }
-    } else if (gameState.entranceDoorKeyUsed) {
         if (!gameState.clothesChanged) {
-            showText("Self", "I can't go to work with my pijama.");
-            // Reset key usage so they have to try again later
-            gameState.entranceDoorKeyUsed = false;
-            return;
-        }
-        gameState.entranceDoorOpen = true;
-        removeItem("Entrance Door Key");
-        updateEntranceImages();
-        showText("Self", "I unlocked the door! Let's go.");
-        setTimeout(() => {
+            showText("Self", "Wait, I can't leave home dressed in my pijama. I need to change first.");
+        } else {
+            showText("Self", "The door is open, I'm out of here.");
             if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
                 winningSound.play();
                 showText("System", "You escaped on time! You win!");
             } else {
                 document.getElementById('fail-screen').classList.remove('hidden');
             }
-        }, 1500);
+        }
+    } else if (gameState.entranceDoorKeyUsed) {
+        gameState.entranceDoorOpen = true;
+        removeItem("Entrance Door Key");
+        updateEntranceImages();
+        if (!gameState.clothesChanged) {
+            showText("Self", "I unlocked the door, but wait... I can't leave home dressed in my pijama. I need to change first.");
+        } else {
+            showText("Self", "I unlocked the door! Let's go.");
+        }
     } else {
         showText("Self", "The front door is locked tight. I need the key to get out.");
     }
@@ -49,8 +43,8 @@ interactHandlers['hallway_table'] = function () {
         cabinetOpenSound.cloneNode().play();
         if (!gameState.hallwayTableOpenedOnce) {
             gameState.hallwayTableOpenedOnce = true;
-            showText("Self", `I pulled open the hallway table drawer. There is a sticky note inside with a number: "${targetCode[3]}"`);
-            addItem(`${targetCode[3]}`);
+            showText("Self", `I pulled open the hallway table drawer. There is a torn piece of paper inside!`);
+            addItem(`Piece of Paper ${targetCode[3]}`);
         }
     } else {
         gameState.hallwayTableOpen = false;
@@ -84,11 +78,14 @@ function updateEntranceImages() {
     const keysTaken  = gameState.inventory.includes("Living Room Key");
 
     const entranceScene = document.getElementById('scene-entrance');
+    const doorOpenImg = document.getElementById('door-open-overlay');
 
-    if (gameState.entranceDoorOpen) {
-        entranceScene.style.backgroundImage =
-            "url('../pictures/Entrance%20door/door%20open.png')";
-        return;
+    if (doorOpenImg) {
+        if (gameState.entranceDoorOpen) {
+            doorOpenImg.classList.remove('hidden');
+        } else {
+            doorOpenImg.classList.add('hidden');
+        }
     }
 
     if (drawerOpen && keysTaken) {
