@@ -10,7 +10,7 @@
 interactHandlers['kitchen_middle'] = function () {
     if (!gameState.fruitsBowlClicked) {
         gameState.fruitsBowlClicked = true;
-        showText("Self", "I remember that there were keys inside this bowl");
+        showText("Self", "David tossed some keys in here. Let's see what he decided to padlock today.");
     } else if (!gameState.kitchenKeysFound) {
         gameState.kitchenKeysFound = true;
         document.getElementById('kitchen-bowl-found').classList.remove('hidden');
@@ -24,7 +24,7 @@ interactHandlers['kitchen_middle'] = function () {
 // ---------------------------------------------------------------------------
 interactHandlers['island_drawers'] = function () {
     if (!gameState.kitchenKeysFound) {
-        showText("Self", "You need a key to open the cabinet");
+        showText("Self", "Locked. He locked the plates. Because obviously, the burglars are coming for our IKEA dishware, really David?");
     } else if (!gameState.upperCabinetUnlocked) {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
@@ -33,7 +33,7 @@ interactHandlers['island_drawers'] = function () {
         updateKitchenImages();
         if (gameState.upperCabinetOpen && !gameState.upperCabinetOpenedOnce) {
             gameState.upperCabinetOpenedOnce = true;
-            showText("Self", `I opened the upper cabinet. Inside, tucked next to some plates, is a torn piece of paper!`);
+            showText("Self", `Cabinet open. Oh look, a torn piece of paper next to the salad bowls. Very normal household behavior.`);
             addItem(`Piece of Paper ${targetCode[1]}`);
         }
     }
@@ -44,7 +44,7 @@ interactHandlers['island_drawers'] = function () {
 // ---------------------------------------------------------------------------
 interactHandlers['oven'] = function () {
     if (!gameState.kitchenKeysFound) {
-        showText("Self", "You need a key to open the cabinet");
+        showText("Self", "Locked too. Is he afraid the burglars are going to bake a cake?");
     } else if (!gameState.lowerCabinetUnlocked) {
         showText("Self", "The cabinet is locked. I should use the cabinet keys.");
     } else {
@@ -62,21 +62,21 @@ function updateKitchenImages() {
     const upper = gameState.upperCabinetOpen;
     const lower = gameState.lowerCabinetOpen;
 
-    const bowlEl  = document.getElementById('kitchen-bowl-found');
+    const bowlEl = document.getElementById('kitchen-bowl-found');
     const upperEl = document.getElementById('kitchen-upper-open');
     const lowerEl = document.getElementById('kitchen-lower-open');
-    const bothEl  = document.getElementById('kitchen-both-open');
+    const bothEl = document.getElementById('kitchen-both-open');
 
     if (upperEl) upperEl.classList.add('hidden');
     if (lowerEl) lowerEl.classList.add('hidden');
-    if (bothEl)  bothEl.classList.add('hidden');
+    if (bothEl) bothEl.classList.add('hidden');
 
     if (!upper && !lower) {
         // Both cabinets closed — hide bowl overlay so base image shows
         if (bowlEl) bowlEl.classList.add('hidden');
     } else {
         if (upper && lower) {
-            if (bothEl)  bothEl.classList.remove('hidden');
+            if (bothEl) bothEl.classList.remove('hidden');
         } else if (upper) {
             if (upperEl) upperEl.classList.remove('hidden');
         } else if (lower) {

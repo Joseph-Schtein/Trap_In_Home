@@ -10,12 +10,12 @@
 interactHandlers['front_door'] = function () {
     if (gameState.entranceDoorOpen) {
         if (!gameState.clothesChanged) {
-            showText("Self", "Wait, I can't leave home dressed in my pijama. I need to change first.");
+            showText("Self", "Wait, I can't leave in pajamas. I'm doing a presentation, not a sleepover. Better change first.");
         } else {
-            showText("Self", "The door is open, I'm out of here.");
+            showText("Self", "The door is open, I'm finally out of here! David is sleeping on the couch when he return.");
             if (gameState.currentTimeMinutes <= 8 * 60 + 45) {
                 winningSound.play();
-                showText("System", "You escaped on time! You win!", () => {
+                showText("System", "You escaped on time and made it to your meeting! You win!", () => {
                     document.getElementById('win-screen').classList.remove('hidden');
                 });
             } else {
@@ -27,12 +27,12 @@ interactHandlers['front_door'] = function () {
         removeItem("Entrance Door Key");
         updateEntranceImages();
         if (!gameState.clothesChanged) {
-            showText("Self", "I unlocked the door, but wait... I can't leave home dressed in my pijama. I need to change first.");
+            showText("Self", "I unlocked the door! But wait, I'm still in pajamas. Can't pitch to the board in my flannels. Gotta change.");
         } else {
-            showText("Self", "I unlocked the door! Let's go.");
+            showText("Self", "I unlocked the door! I survived the Escape Room of Paranoia. David is so dead.");
         }
     } else {
-        showText("Self", "The front door is locked tight. I need the key to get out.");
+        showText("Self", "Locked tight. A fortress. I am trapped in my own home. *Laugh track plays in my head*");
     }
 };
 
@@ -45,7 +45,7 @@ interactHandlers['hallway_table'] = function () {
         cabinetOpenSound.cloneNode().play();
         if (!gameState.hallwayTableOpenedOnce) {
             gameState.hallwayTableOpenedOnce = true;
-            showText("Self", `I pulled open the hallway table drawer. There is a torn piece of paper inside!`);
+            showText("Self", `Drawer open. Oh look, another torn piece of paper! I feel like I'm in a terrible detective movie.`);
             addItem(`Piece of Paper ${targetCode[3]}`);
         }
     } else {
@@ -62,7 +62,7 @@ interactHandlers['keys'] = function () {
     if (!gameState.inventory.includes("Living Room Key")) {
         keysSound.cloneNode().play();
         addItem("Living Room Key");
-        showText("Self", "I took the Living Room Key from the table.");
+        showText("Self", "A key labeled 'Living Room'. Who has a key for a living room?! Our open-concept living room!");
         const hotspot = document.getElementById('keys-hotspot');
         if (hotspot) hotspot.remove();
         updateEntranceImages();
@@ -77,7 +77,7 @@ interactHandlers['keys'] = function () {
 // ---------------------------------------------------------------------------
 function updateEntranceImages() {
     const drawerOpen = gameState.hallwayTableOpen;
-    const keysTaken  = gameState.inventory.includes("Living Room Key");
+    const keysTaken = gameState.inventory.includes("Living Room Key");
 
     const entranceScene = document.getElementById('scene-entrance');
     const doorOpenImg = document.getElementById('door-open-overlay');

@@ -102,8 +102,8 @@ function showOpeningModal() {
 }
 
 function startIntroSequence() {
-    showText("Self", "Wow, I slept so good. I didn't even hear my spouse leave for their flight.");
-    showText("Self", "Wait, what time is it? I hope I'm not late for the meeting!");
+    showText("Self", "Wow, what a peaceful night. Didn't even hear David leave for his 6 AM flight. Perfect.");
+    showText("Self", "Wait, what time is it? If I'm late for my big presentation, I swear to God...");
     showText("Self", "*Groan*... What is that piercing noise? Is my cell phone ringing somewhere in the room?", () => {
         gameState.isPhoneRinging = true;
         gameState.phoneRingtone.play().catch(error => {
@@ -472,28 +472,28 @@ document.addEventListener('pointerdown', (e) => {
     const invItem = e.target.closest('.inv-item');
     if (invItem) {
         const itemName = invItem.getAttribute('data-item-name');
-        
+
         // If it's a draggable item
         if (itemName === "Kitchen Keys" || itemName === "Living Room Key" || itemName === "Entrance Door Key") {
             gameState.activeDragItem = itemName;
             dragStartX = e.clientX;
             dragStartY = e.clientY;
             isDraggingAction = false;
-            
+
             e.preventDefault(); // Prevent default browser drag or scrolling
-            
+
             // Create ghost
             dragGhost = document.createElement('img');
             dragGhost.className = 'drag-ghost';
-            
+
             // Get the image source from the inventory item
             const img = invItem.querySelector('img');
             if (img) {
                 dragGhost.src = img.src;
             } else {
-                return; 
+                return;
             }
-            
+
             dragGhost.style.display = 'none'; // Hide until we actually move
             document.body.appendChild(dragGhost);
             dragGhost.style.left = e.clientX + 'px';
@@ -510,7 +510,7 @@ document.addEventListener('pointermove', (e) => {
             if (dx * dx + dy * dy > 25) { // 5px threshold for drag
                 isDraggingAction = true;
                 dragGhost.style.display = '';
-                
+
                 // Highlight item
                 const slots = document.getElementById('inventory-slots');
                 if (slots) {
@@ -520,13 +520,13 @@ document.addEventListener('pointermove', (e) => {
                         }
                     });
                 }
-                
+
                 // Hide context menu if open
                 const menu = document.getElementById('inventory-context-menu');
                 if (menu) menu.classList.add('hidden');
             }
         }
-        
+
         if (isDraggingAction) {
             dragGhost.style.left = e.clientX + 'px';
             dragGhost.style.top = e.clientY + 'px';
@@ -541,7 +541,7 @@ document.addEventListener('pointerup', (e) => {
             dragGhost.style.display = 'none'; // hide ghost so elementFromPoint works
             const elemBelow = document.elementFromPoint(e.clientX, e.clientY);
             dragGhost.style.display = '';
-            
+
             if (elemBelow && elemBelow.classList.contains('hotspot')) {
                 const onclickAttr = elemBelow.getAttribute('onclick');
                 if (onclickAttr) {
@@ -554,7 +554,7 @@ document.addEventListener('pointerup', (e) => {
             } else {
                 showText("Self", "I can't use this here.");
             }
-            
+
             // Delay clearing activeDragItem so click events don't open the context menu
             setTimeout(() => {
                 gameState.activeDragItem = null;
@@ -562,11 +562,11 @@ document.addEventListener('pointerup', (e) => {
         } else {
             gameState.activeDragItem = null;
         }
-        
+
         // Cleanup drag state
         dragGhost.remove();
         dragGhost = null;
-        
+
         // Remove highlight
         const slots = document.getElementById('inventory-slots');
         if (slots) {
@@ -640,9 +640,9 @@ function declineCall() {
     gameState.callDeclinedCount++;
 
     if (gameState.callDeclinedCount > 3) {
-        showText("Self", "Man, I am such a heavy sleeper, I could sleep through an earthquake. Let him call back.");
+        showText("Self", "I am NOT dealing with David before coffee. Let it ring.");
     } else {
-        showText("Self", "Maybe I should answer him...");
+        showText("Self", "Maybe I should answer him... he usually doesn't call this early.");
     }
 
     setTimeout(() => {
@@ -653,9 +653,10 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("Spouse via Text", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
+        showText("David via Text", `Hey honey... I'm so sorry. I landed safely, but I just realized I locked the deadbolt out of habit because of that burglary last month. The spare key is in my locked drawer in the bedroom.`);
+        showText("David via Text", `I don't remember the code, only the first digit which is: ${targetCode[0]}. I wrote the other numbers on scrap papers and left them around the house... Please don't be mad!`);
     } else {
-        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
+        showText("David via Text", `Babe, please wake up! I accidentally locked you in! The spare key is in my locked drawer. First digit is ${targetCode[0]}. Find the other three digits on scrap papers around the house. I'm so sorry!`);
     }
     if (!gameState.inventory.includes(`Piece of Paper ${targetCode[0]}`)) {
         addItem(`Piece of Paper ${targetCode[0]}`);
@@ -692,7 +693,7 @@ function checkLock() {
             if (drawerEl) drawerEl.classList.remove('hidden');
         }
         showText("System", "*Click* The lock opens.");
-        showText("Self", "It opened! Let's see what's inside... ah, just some jewelry like David said.");
+        showText("Self", "It opened! Let's see... a coupon for pizza, his fantasy football roster, and... the key! Finally!");
     } else {
         wrongSound.play();
         showText("System", "The lock doesn't budge. Incorrect code.");
@@ -720,17 +721,17 @@ let nextGroupId = 1;
 function openPaperPuzzle() {
     const ui = document.getElementById('paper-puzzle-ui');
     if (!ui) return;
-    
+
     document.getElementById('game-container').classList.add('dialogue-active'); // Reusing this to block underlying clicks
     ui.classList.remove('hidden');
-    
+
     const container = document.getElementById('paper-puzzle-container');
     container.innerHTML = '';
-    
+
     // Reset groups
     puzzleGroups = {};
     nextGroupId = 1;
-    
+
     // Find pieces in inventory
     const piecesInInv = [];
     targetCode.forEach(digit => {
@@ -738,7 +739,7 @@ function openPaperPuzzle() {
             piecesInInv.push(digit.toString());
         }
     });
-    
+
     // Spawn pieces
     piecesInInv.forEach(digit => {
         const layout = puzzleLayoutData[digit];
@@ -747,27 +748,27 @@ function openPaperPuzzle() {
         pieceEl.id = `puzzle-piece-${digit}`;
         pieceEl.style.width = layout.w + 'px';
         pieceEl.style.height = layout.h + 'px';
-        
+
         // Random starting position
         const startX = Math.random() * (874 - layout.w);
         const startY = Math.random() * (620 - layout.h);
         pieceEl.style.left = startX + 'px';
         pieceEl.style.top = startY + 'px';
-        
+
         // Save state
         pieceEl.dataset.digit = digit;
         pieceEl.dataset.groupId = nextGroupId++;
         puzzleGroups[digit] = pieceEl.dataset.groupId;
-        
+
         const img = document.createElement('img');
         img.src = `../pictures/papers/cropped_piece_${digit}_v2.png`;
         img.className = 'puzzle-piece-img';
         img.style.width = '100%';
         img.style.height = '100%';
         pieceEl.appendChild(img);
-        
+
         container.appendChild(pieceEl);
-        
+
         setupPuzzleDrag(pieceEl);
     });
 }
@@ -780,17 +781,17 @@ function closePaperPuzzle() {
 function setupPuzzleDrag(el) {
     let startX, startY, initialLefts = {}, initialTops = {};
     const digit = el.dataset.digit;
-    
+
     el.onpointerdown = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        
+
         startX = e.clientX;
         startY = e.clientY;
-        
+
         const groupId = el.dataset.groupId;
         const allPieces = Array.from(document.querySelectorAll('.puzzle-piece'));
-        
+
         // Bring all pieces in this group to front
         allPieces.forEach(p => {
             if (p.dataset.groupId === groupId) {
@@ -801,12 +802,12 @@ function setupPuzzleDrag(el) {
                 p.style.zIndex = '1';
             }
         });
-        
+
         document.onpointermove = (ev) => {
             ev.preventDefault();
             const dx = ev.clientX - startX;
             const dy = ev.clientY - startY;
-            
+
             // Move all pieces in the group
             allPieces.forEach(p => {
                 if (p.dataset.groupId === groupId) {
@@ -815,7 +816,7 @@ function setupPuzzleDrag(el) {
                 }
             });
         };
-        
+
         document.onpointerup = () => {
             document.onpointermove = null;
             document.onpointerup = null;
@@ -828,11 +829,11 @@ function checkPuzzleSnaps(movedGroupId) {
     const allPieces = Array.from(document.querySelectorAll('.puzzle-piece'));
     const movedPieces = allPieces.filter(p => p.dataset.groupId === movedGroupId);
     const otherPieces = allPieces.filter(p => p.dataset.groupId !== movedGroupId);
-    
+
     if (otherPieces.length === 0) return;
-    
+
     let snapped = false;
-    
+
     // Check if any moved piece can snap to any other piece
     for (let mp of movedPieces) {
         if (snapped) break;
@@ -840,32 +841,32 @@ function checkPuzzleSnaps(movedGroupId) {
         const mpLayout = puzzleLayoutData[mpDigit];
         const mpLeft = parseFloat(mp.style.left);
         const mpTop = parseFloat(mp.style.top);
-        
+
         for (let op of otherPieces) {
             const opDigit = op.dataset.digit;
             const opLayout = puzzleLayoutData[opDigit];
             const opLeft = parseFloat(op.style.left);
             const opTop = parseFloat(op.style.top);
-            
+
             // Calculate theoretical position of mp if it were snapped correctly to op
             // target offset relative to full canvas: mpLayout.targetX - opLayout.targetX
             const dxTarget = mpLayout.targetX - opLayout.targetX;
             const dyTarget = mpLayout.targetY - opLayout.targetY;
-            
+
             const expectedMpLeft = opLeft + dxTarget;
             const expectedMpTop = opTop + dyTarget;
-            
+
             // Calculate distance
             const dist = Math.hypot(mpLeft - expectedMpLeft, mpTop - expectedMpTop);
-            
+
             if (dist < 40) { // 40px snap threshold
                 // Snap!
                 snapped = true;
-                
+
                 // Adjust all moved pieces by the correction vector
                 const fixX = expectedMpLeft - mpLeft;
                 const fixY = expectedMpTop - mpTop;
-                
+
                 movedPieces.forEach(p => {
                     p.style.left = (parseFloat(p.style.left) + fixX) + 'px';
                     p.style.top = (parseFloat(p.style.top) + fixY) + 'px';
@@ -873,18 +874,18 @@ function checkPuzzleSnaps(movedGroupId) {
                     p.dataset.groupId = op.dataset.groupId;
                     puzzleGroups[p.dataset.digit] = op.dataset.groupId;
                 });
-                
+
                 paperSound.cloneNode().play();
                 break;
             }
         }
     }
-    
+
     if (snapped) {
         // Check if all 4 are in the same group
         const allGroupIds = allPieces.map(p => p.dataset.groupId);
         const uniqueGroups = new Set(allGroupIds);
-        
+
         if (allPieces.length === 4 && uniqueGroups.size === 1) {
             // Puzzle completed!
             setTimeout(() => {

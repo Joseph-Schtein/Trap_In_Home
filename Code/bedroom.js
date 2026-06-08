@@ -59,28 +59,14 @@ interactHandlers['wardrobe'] = function () {
         gameState.wardrobeOpen = true;
         cabinetOpenSound.cloneNode().play();
         if (!gameState.clothesChanged) {
-            showText("Self", "I flung the closet doors open. What should I do?", null, [
-                {
-                    text: "Take 7 minutes to change clothes",
-                    action: () => {
-                        gameState.clothesChanged = true;
-                        gameState.wardrobeOpen = false;
-                        advanceTime(7);
-                        updateBedroomImages();
-                        showText("Self", "I changed my clothes. Sadly, Narnia is closed for renovations.");
-                    }
-                },
-                {
-                    text: "Just look inside",
-                    action: () => {
-                        updateBedroomImages();
-                        showText("Self", "Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
-                    }
-                }
-            ]);
+            gameState.clothesChanged = true;
+            advanceTime(7);
+            updateBedroomImages();
+            showText("Self", "Power suit equipped. I am now professionally dressed for this hostage situation.");
+            showText("Self", "No Narnia. Just my clothes and another one of David's 'burglar-proof' lockboxes. Who burglarizes a closet?");
         } else {
             updateBedroomImages();
-            showText("Self", "I flung the closet doors open! Sadly, Narnia is closed for renovations, but there's a suspicious-looking lockbox here instead.");
+            showText("Self", "No Narnia. Just my clothes and another one of David's 'burglar-proof' lockboxes. Who burglarizes a closet?");
         }
     } else {
         gameState.wardrobeOpen = false;
@@ -102,13 +88,13 @@ interactHandlers['Drawer'] = function () {
         for (let i = 0; i < 4; i++) {
             document.getElementById(`digit-${i}`).innerText = '0';
         }
-        showText("Self", "The drawer has a 4-digit combination lock. I need the correct code.");
+        showText("Self", "The drawer has a 4-digit combination lock. Of course David put a lock on his underwear drawer.");
     } else {
         if (!gameState.inventory.includes("Entrance Door Key")) {
             addItem("Entrance Door Key");
-            showText("Self", "Oh, under the jewelry... it's the Entrance Door Key!");
+            showText("Self", "Oh, under his 'lucky' socks... it's the Entrance Door Key! Thank God.");
         } else {
-            showText("Self", "The drawer is unlocked. Just some jewelry inside like David said, OK now I need to go to the work.");
+            showText("Self", "The drawer is unlocked. Nothing else useful. Let's get out of here before he texts me a riddle for the garage door.");
         }
     }
 };

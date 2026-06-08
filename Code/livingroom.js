@@ -15,7 +15,7 @@ interactHandlers['paper'] = function () {
         if (paperEl) paperEl.style.display = 'none';
         const hotspot = document.getElementById('paper-hotspot');
         if (hotspot) hotspot.remove();
-        showText("Self", "I picked up the paper.");
+        showText("Self", "I picked up a suspicious piece of paper. Might be David's scribbles.");
     }
 };
 
@@ -24,7 +24,7 @@ interactHandlers['paper'] = function () {
 // ---------------------------------------------------------------------------
 interactHandlers['tv_drawers'] = function () {
     if (!gameState.tvDrawersUnlocked) {
-        showText("Self", "It's locked. I should find a key for this.");
+        showText("Self", "Locked. The TV drawers are locked. He really thinks someone's going to steal our old DVDs?");
         return;
     }
 
@@ -33,7 +33,7 @@ interactHandlers['tv_drawers'] = function () {
         cabinetOpenSound.cloneNode().play();
         if (!gameState.tvDrawersOpenedOnce) {
             gameState.tvDrawersOpenedOnce = true;
-            showText("Self", "A bunch of junk... Oh wait, here's a torn piece of paper with a digit!");
+            showText("Self", "Old batteries, an old Xbox one... and a torn piece of paper with a digit. This isn't an escape room, David, it's our living room!");
             addItem(`Piece of Paper ${targetCode[2]}`);
         }
     } else {
@@ -52,7 +52,7 @@ interactHandlers['glass_cabinet'] = function () {
         cabinetOpenSound.cloneNode().play();
         if (!gameState.glassCabinetOpenedOnce) {
             gameState.glassCabinetOpenedOnce = true;
-            showText("Self", "Just some fancy glasses we never use.");
+            showText("Self", "Just some fancy glasses we never use. Thankfully he hasn't padlocked this yet.");
         }
     } else {
         gameState.glassCabinetOpen = false;
@@ -66,21 +66,21 @@ interactHandlers['glass_cabinet'] = function () {
 // Handles all overlay combinations for the living room.
 // ---------------------------------------------------------------------------
 function updateLivingRoomImages() {
-    const tvOpen    = gameState.tvDrawersOpen;
+    const tvOpen = gameState.tvDrawersOpen;
     const glassOpen = gameState.glassCabinetOpen;
 
-    const tvEl    = document.getElementById('tv-drawers-open');
+    const tvEl = document.getElementById('tv-drawers-open');
     const glassEl = document.getElementById('glass-cabinet-open');
-    const bothEl  = document.getElementById('both-doors-open');
+    const bothEl = document.getElementById('both-doors-open');
 
-    if (tvEl)    tvEl.classList.add('hidden');
+    if (tvEl) tvEl.classList.add('hidden');
     if (glassEl) glassEl.classList.add('hidden');
-    if (bothEl)  bothEl.classList.add('hidden');
+    if (bothEl) bothEl.classList.add('hidden');
 
     if (tvOpen && glassOpen) {
-        if (bothEl)  bothEl.classList.remove('hidden');
+        if (bothEl) bothEl.classList.remove('hidden');
     } else if (tvOpen) {
-        if (tvEl)    tvEl.classList.remove('hidden');
+        if (tvEl) tvEl.classList.remove('hidden');
     } else if (glassOpen) {
         if (glassEl) glassEl.classList.remove('hidden');
     }
