@@ -491,9 +491,9 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("Spouse via Text", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
+        showText("David", `Hey honey! I just landed. Btw, one of the digits for your locked drawer is ${targetCode[0]}. I left the others around the house!`);
     } else {
-        showText("Spouse via Text", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
+        showText("David", `Wow, are you a bear hibernating? I landed. Here's one of the digits: ${targetCode[0]}. Find the rest in the other rooms!`);
     }
 }
 

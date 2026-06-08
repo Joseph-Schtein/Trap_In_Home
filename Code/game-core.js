@@ -653,10 +653,10 @@ function declineCall() {
 
 function triggerPhoneDialogue() {
     if (gameState.callDeclinedCount <= 3) {
-        showText("David via Text", `Hey honey... I'm so sorry. I landed safely, but I just realized I locked the deadbolt out of habit because of that burglary last month. The spare key is in my locked drawer in the bedroom.`);
-        showText("David via Text", `I don't remember the code, only the first digit which is: ${targetCode[0]}. I wrote the other numbers on scrap papers and left them around the house... Please don't be mad!`);
+        showText("David", `Hey honey... I'm so sorry. I landed safely, but I just realized I locked the deadbolt out of habit because of that burglary last month. The spare key is in my locked drawer in the bedroom.`);
+        showText("David", `I don't remember the code, only the first digit which is: ${targetCode[0]}. I wrote the other numbers on scrap papers and left them around the house... Please don't be mad!`);
     } else {
-        showText("David via Text", `Babe, please wake up! I accidentally locked you in! The spare key is in my locked drawer. First digit is ${targetCode[0]}. Find the other three digits on scrap papers around the house. I'm so sorry!`);
+        showText("David", `Babe, please wake up! I accidentally locked you in! The spare key is in my locked drawer. First digit is ${targetCode[0]}. Find the other three digits on scrap papers around the house. I'm so sorry!`);
     }
     if (!gameState.inventory.includes(`Piece of Paper ${targetCode[0]}`)) {
         addItem(`Piece of Paper ${targetCode[0]}`);
