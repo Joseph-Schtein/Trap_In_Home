@@ -427,7 +427,7 @@ function openImagePreview(src) {
     if (modal && img) {
         img.src = src;
         modal.classList.remove('hidden');
-        paperSound.cloneNode().play();
+        new Audio(paperSound.src).play().catch(() => {});
     }
 }
 
@@ -786,6 +786,8 @@ function setupPuzzleDrag(el) {
         e.preventDefault();
         e.stopPropagation();
 
+        new Audio(paperSound.src).play().catch(() => {});
+
         startX = e.clientX;
         startY = e.clientY;
 
@@ -875,7 +877,7 @@ function checkPuzzleSnaps(movedGroupId) {
                     puzzleGroups[p.dataset.digit] = op.dataset.groupId;
                 });
 
-                paperSound.cloneNode().play();
+                new Audio(paperSound.src).play().catch(() => {});
                 break;
             }
         }

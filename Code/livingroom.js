@@ -9,7 +9,7 @@
 // ---------------------------------------------------------------------------
 interactHandlers['paper'] = function () {
     if (!gameState.inventory.includes("Paper")) {
-        paperSound.cloneNode().play();
+        new Audio(paperSound.src).play().catch(() => {});
         addItem("Paper");
         const paperEl = document.getElementById('living-room-paper');
         if (paperEl) paperEl.style.display = 'none';
